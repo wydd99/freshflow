@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鲜配订货系统 · 使用教程</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif; color: #2c3e50; line-height: 1.75; background: #f6f8f7; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 20px 60px; }
+  .cover { background: linear-gradient(135deg, #1f9d55, #157a40); color: #fff; text-align: center; padding: 56px 20px 44px; border-radius: 0 0 24px 24px; }
+  .cover h1 { font-size: 34px; letter-spacing: 6px; }
+  .cover p { opacity: .92; margin-top: 10px; font-size: 15px; }
+  .ver { display: inline-block; margin-top: 16px; background: rgba(255,255,255,.18); padding: 4px 16px; border-radius: 14px; font-size: 13px; }
+  nav { background: #fff; border-radius: 14px; margin: 24px 0; padding: 18px 24px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+  nav b { color: #1f9d55; }
+  nav a { color: #2c3e50; text-decoration: none; margin-right: 18px; font-size: 14px; }
+  nav a:hover { color: #1f9d55; }
+  section { background: #fff; border-radius: 14px; padding: 28px 32px; margin-bottom: 22px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+  h2 { font-size: 21px; color: #157a40; border-left: 5px solid #1f9d55; padding-left: 12px; margin-bottom: 18px; }
+  h3 { font-size: 16px; margin: 20px 0 8px; color: #2c3e50; }
+  h3 .no { display: inline-block; background: #1f9d55; color: #fff; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-size: 13px; margin-right: 8px; }
+  p, li { font-size: 14.5px; }
+  ul { padding-left: 22px; margin: 6px 0; }
+  li { margin: 4px 0; }
+  .tip { background: #f0fdf4; border-left: 4px solid #1f9d55; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13.5px; }
+  .warn { background: #fff7e6; border-left: 4px solid #e6a23c; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13.5px; }
+  .url { background: #f4f6f5; border: 1px dashed #bcd9c6; padding: 8px 14px; border-radius: 8px; font-size: 13px; word-break: break-all; margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13.5px; }
+  th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; }
+  th { background: #f0fdf4; color: #157a40; }
+  .role { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; margin-right: 6px; }
+  .role.a { background: #e8f7ee; color: #157a40; }
+  .role.b { background: #eef4ff; color: #3b6fd4; }
+  footer { text-align: center; color: #9aa5a0; font-size: 12.5px; padding: 20px 0 40px; }
+  @media print {
+    body { background: #fff; }
+    .cover { border-radius: 0; }
+    section, nav { box-shadow: none; border: 1px solid #eee; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>鲜配订货系统</h1>
+  <p>示例商家A · 商家管理端 + 客户订货端 使用教程</p>
+  <span class="ver">V1.0 · 2026 年 9 月</span>
+</div>
+
+<div class="wrap">
+
+<nav>
+  <b>目录：</b>
+  <a href="#start">快速开始</a>
+  <a href="#admin">一、商家管理端</a>
+  <a href="#mall">二、客户订货端</a>
+  <a href="#faq">三、常见问题</a>
+</nav>
+
+<section id="start">
+  <h2>快速开始</h2>
+  <table>
+    <tr><th>角色</th><th>用什么</th><th>账号</th></tr>
+    <tr>
+      <td><span class="role a">商家员工</span>商家A团队</td>
+      <td>电脑浏览器 → 管理端</td>
+      <td>由配送站管理员开通，账号密码另行发放</td>
+    </tr>
+    <tr>
+      <td><span class="role b">订货客户</span>饭店 / 食堂 / 酒店采购</td>
+      <td>手机微信 → 小程序「鲜配订货」或手机浏览器打开订货页</td>
+      <td>由配送站业务员开通，账号密码另行发放</td>
+    </tr>
+  </table>
+  <div class="tip">💡 忘记密码：联系配送站业务员重置即可，1 分钟解决。登录后可在「设置」/「我的订单」中自行修改密码。</div>
+</section>
+
+<section id="admin">
+  <h2>一、商家管理端（电脑使用）</h2>
+  <p>管理端网址由配送站提供（建议收藏到浏览器书签）。登录后左侧为功能菜单，按日常作业顺序介绍如下。</p>
+
+  <h3><span class="no">1</span>商品管理 —— 维护你的菜品档案</h3>
+  <ul>
+    <li>点「新增商品」填写：品名、分类、单位（默认斤）、称重类型、基准价。<b>别名</b>很重要——填上手写单常见的叫法（如鸡蛋的别名"鸡旦"），智能录单识别准确率会大幅提高。</li>
+    <li><b>批量导入</b>：点「下载导入模板」→ 在 Excel 里按模板填好全部商品 → 点「批量导入 Excel」一次入库。</li>
+    <li>「商城可见」开关：关掉的商品不会出现在客户订货页。</li>
+    <li>「商品介绍」：填了之后客户在订货页点商品名可看到图文介绍。</li>
+  </ul>
+
+  <h3><span class="no">2</span>客户管理 —— 维护订货客户</h3>
+  <ul>
+    <li>新增客户时设置：<b>等级</b>（A/B/C 类，对应不同价格档）、<b>结算方式</b>（当日结 / 月结 / 货到付款）、<b>欠款上限</b>和<b>超期禁单天数</b>。</li>
+    <li>欠款超过上限或超期未结款的客户，下单时系统自动拦截（急单可由管理员"强制放行"，会留操作记录）。</li>
+    <li>「商城可见」：设为"指定分类"后，该客户只能看到勾选分类里的商品。</li>
+  </ul>
+
+  <h3><span class="no">3</span>报价 —— 一客一价</h3>
+  <ul>
+    <li><b>批量改价（日常主力）</b>：选客户等级 → 调价方式（按基准价上浮 X% 或统一价）→ 预览确认 → 执行，当天生效。行情变了每天早上花 10 秒调一次。</li>
+    <li><b>按商品查价</b>：给某个客户单独设价（最高优先级），或查看某商品的全部价格历史。</li>
+    <li>客户下单时自动按「客户专属价 → 等级价 → 基准价」取价，无需手动改。</li>
+  </ul>
+
+  <h3><span class="no">4</span>订单处理</h3>
+  <ul>
+    <li>客户在商城下的单、后台代录的单，都汇总在「订单」页。</li>
+    <li>状态流转：<b>草单 → 已确认 →（分拣）→ 待发货 → 已发货</b>。草单核对无误后点「确认」才进入履约；有问题可「作废」。</li>
+    <li>新增订单（后台代录）：选客户 → 逐行选商品，单价自动按该客户的价格带出 → 保存草单。</li>
+    <li>客户欠款超上限时新建订单会被拦截，可点「强制放行」应急。</li>
+  </ul>
+
+  <h3><span class="no">5</span>智能录单 —— 报单变订单</h3>
+  <ul>
+    <li><b>文本粘贴</b>：把客户微信里发的文字单（"客户甲：奶白菜一斤，土豆两斤"）直接粘贴 → 识别 → 自动拆成商品行。</li>
+    <li><b>拍照识别</b>：上传手写单/打印单照片 → AI 逐行识别 → 自动列出商品行。</li>
+    <li>识别结果三色区分：<b style="color:#1f9d55">已匹配</b>直接用；<b style="color:#e6a23c">待选</b>点下拉确认正确商品；<b style="color:#e64340">未匹配</b>点「一键建档」当场入库（填品名/分类/单位/价格）。</li>
+    <li>核对无误 → 「保存为草单」→ 到订单页确认。</li>
+  </ul>
+  <div class="tip">💡 识别口径：肉眼能看清的字基本都能识别，特别潦草的可能有误——所以保存前请扫一眼结果列表。越用越准：常用错别字建档时加进别名即可。</div>
+
+  <h3><span class="no">6</span>分拣 —— 装货作业台</h3>
+  <ul>
+    <li>选日期（今天/明天）→ 左侧订单队列按颜色区分进度：<b style="color:#3b82f6">蓝 = 未开始</b>、<b style="color:#e6a23c">黄 = 进行中</b>、<b style="color:#1f9d55">绿 = 完成</b>。</li>
+    <li>点订单 → 输入每个商品的实际分拣数量（支持小数，如 4.5 斤）→「完成分拣」→ <b>自动跳到下一个商品</b>。</li>
+    <li>缺货点「缺货」登记；分错的可在已分拣列表「撤销」或「补签」。</li>
+    <li>勾选「分拣自动打印标签」：每分拣完一件自动打出贴箱标签（客户名+品名+数量+时间）。</li>
+    <li>整单分拣完 → 点「确认发货」：订单转为已发货，货款自动记入客户欠款。</li>
+  </ul>
+
+  <h3><span class="no">7</span>打印中心 —— 三种票据</h3>
+  <ul>
+    <li><b>配货单（A4 纯文字）</b>：给配货员装货用，大字清晰。</li>
+    <li><b>出库单（A4 表格）</b>：含人民币大写金额、三联签字栏，随货给客户。</li>
+    <li><b>小票（80mm）</b>：热敏小票打印机用。</li>
+    <li>选订单 → 选模板 → 预览 → 打印（浏览器打印框里选打印机；想先存档可选"另存为 PDF"）。打印次数自动记录，补打有据可查。</li>
+    <li>金额口径：分拣过的订单按<b>实际称重数量</b>出单，未分拣的按下单数量。</li>
+  </ul>
+
+  <h3><span class="no">8</span>对账 —— 收款与对账单</h3>
+  <ul>
+    <li>客户行点「<b>登记收款</b>」：填金额确认，欠款立即减少（欠款清零后客户自动恢复下单资格）。</li>
+    <li>点「<b>对账单</b>」：选月份生成月度对账单（期初欠款 / 本月应收 / 本月收款 / 期末欠款 + 逐笔明细），可打印盖章或存 PDF 发给客户。</li>
+  </ul>
+
+  <h3><span class="no">9</span>首页经营日报</h3>
+  <ul>
+    <li>每天打开系统第一眼：今日订单数、销售额、待分拣数、客户欠款总额、近 7 日销售趋势。</li>
+    <li>成本利润：采购价录入后自动计算。</li>
+  </ul>
+
+  <h3><span class="no">10</span>设置 —— 修改自己的密码</h3>
+  <ul>
+    <li>旧密码 + 新密码即可修改。密码要求：含大写字母、小写字母、数字中至少两类。</li>
+  </ul>
+</section>
+
+<section id="mall">
+  <h2>二、客户订货端（手机使用）</h2>
+  <p><span class="role b">订货客户</span> 两种方式任选，数据实时同步：</p>
+  <div class="url">📱 方式一：微信小程序「鲜配订货」（扫码进入）</div>
+  <div class="url">🌐 方式二：手机浏览器打开订货页（网址由配送站业务员提供，可添加到手机桌面）</div>
+
+  <h3><span class="no">1</span>下单</h3>
+  <ul>
+    <li>登录后按分类浏览商品，<b>价格已按贵司等级自动显示</b>，无需询价。</li>
+    <li>点 ＋/－ 调数量，也可直接在数量框输入（支持半斤 0.5 等小数）。</li>
+    <li>点商品名称可查看商品介绍和规格。</li>
+    <li>底部「去下单」→ 核对清单 → 选发货日期 → 确认下单。</li>
+  </ul>
+
+  <h3><span class="no">2</span>再来一单</h3>
+  <ul>
+    <li>「我的订单」里每张订单有「↻ 按此单再来一单」——点一下复制上次全部商品，按<b>今日最新价格</b>重算，确认即下单。日常补货十秒搞定。</li>
+  </ul>
+
+  <h3><span class="no">3</span>我的订单与对账</h3>
+  <ul>
+    <li>「我的订单」可查看每笔订单状态（草单 / 已确认 / 分拣中 / 已发货 等）。</li>
+    <li>「导出明细」可下载订单明细表；「月度对账单」可按月查看应收/收款/欠款并打印。</li>
+    <li>只能看到自己公司的订单和价格，数据互相隔离。</li>
+  </ul>
+  <div class="warn">⏰ 请在配送站规定的截止时间前下单；下单后如需修改，请联系业务员。</div>
+</section>
+
+<section id="faq">
+  <h2>三、常见问题</h2>
+  <table>
+    <tr><th style="width:38%">问题</th><th>处理</th></tr>
+    <tr><td>忘记密码</td><td>商家员工 / 订货客户均联系配送站业务员重置（1 分钟）；登录后可在设置里自行改新密码</td></tr>
+    <tr><td>客户下单了商家没看到</td><td>刷新订单页；仍没有则确认客户登录的是自己的子账号</td></tr>
+    <tr><td>手写单识别不准</td><td>识别结果需人工核对后保存；潦草字可手动改品名重新匹配，或未匹配行点「一键建档」</td></tr>
+    <tr><td>客户显示"订单被拦截"</td><td>欠款超上限或超期未结——收款登记后自动恢复；急单联系配送站管理员强制放行</td></tr>
+    <tr><td>打印无反应</td><td>确认打印机电源与连接；浏览器打印框可能被拦截，允许弹出窗口后重试</td></tr>
+    <tr><td>想改某客户的价格</td><td>报价页 → 按商品查价 → 新增"客户专属价"（当天生效，优先于等级价）</td></tr>
+  </table>
+</section>
+
+<footer>
+  鲜配订货系统 · 示例商家A<br>
+  账号开通 / 密码重置 / 功能问题，请联系配送站业务员
+</footer>
+
+</div>
+</body>
+</html>

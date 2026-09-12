@@ -1,0 +1,12 @@
+<view class="wrap">
+  <view class="brand">
+    <view class="logo">鲜配</view>
+    <view class="slogan">鲜配订货 · 示例商家A</view>
+  </view>
+  <view class="card">
+    <input class="ipt" placeholder="账号" value="{{username}}" bindinput="onUser" />
+    <input class="ipt" placeholder="密码" password value="{{password}}" bindinput="onPwd" />
+    <button class="btn" loading="{{loading}}" bindtap="doLogin">登 录</button>
+    <view class="tip">账号由配送站开通（联系业务员）</view>
+  </view>
+</view>

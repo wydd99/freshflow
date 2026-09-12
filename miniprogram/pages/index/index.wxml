@@ -1,0 +1,56 @@
+<view class="page">
+  <view class="header">
+    <view class="hello">{{ customerName || '加载中…' }}</view>
+    <view class="datebar">
+      <text>发货日期：</text>
+      <picker mode="date" value="{{deliveryDate}}" bindchange="onDateChange">
+        <text class="date">{{deliveryDate}} ▾</text>
+      </picker>
+    </view>
+  </view>
+
+  <view class="cats">
+    <view class="cat {{catId === item.id ? 'on' : ''}}" wx:for="{{categories}}" wx:key="id"
+      data-id="{{item.id}}" bindtap="onCat">{{item.name}}</view>
+  </view>
+
+  <view class="goods">
+    <view class="gcard" wx:for="{{goods}}" wx:key="id">
+      <view class="ginfo">
+        <view class="gname" data-id="{{item.id}}" bindtap="showDetail">{{item.name}} <text class="gunit">/{{item.unit}}</text></view>
+        <view class="gsub">
+          <text class="price">¥{{item.salePrice}}</text>
+          <text wx:if="{{item.spec}}" class="spec">{{item.spec}}</text>
+        </view>
+      </view>
+      <view class="stepper">
+        <view class="step minus" data-id="{{item.id}}" bindtap="onMinus">−</view>
+        <input class="qty-in" type="digit" value="{{cart[item.id] || 0}}" data-id="{{item.id}}" bindblur="onQtyInput" />
+        <view class="step plus" data-id="{{item.id}}" bindtap="onPlus">＋</view>
+      </view>
+    </view>
+    <view wx:if="{{!goods.length}}" class="empty">该分类暂无可见商品</view>
+  </view>
+
+  <view class="result-mask" wx:if="{{result.visible}}">
+    <view class="result-card">
+      <view class="result-icon">{{result.ok ? '✅' : '⚠️'}}</view>
+      <view class="result-title">{{result.ok ? '下单成功' : '下单失败'}}</view>
+      <view class="result-lines" wx:if="{{result.ok}}">订单号 {{result.orderNo}}
+配送站确认后会尽快安排发货</view>
+      <view class="result-lines" wx:else>{{result.msg}}</view>
+      <view class="result-btn" bindtap="closeResult">确认（{{result.countdown}}）</view>
+    </view>
+  </view>
+
+  <view class="voicebar">
+    <view class="voice-btn {{recording ? 'rec' : ''}}" bindtouchstart="onVoiceStart" bindtouchend="onVoiceEnd">
+      {{recording ? '松开 · 识别中…' : '🎤 按住说话下单'}}
+    </view>
+  </view>
+
+  <view class="cartbar">
+    <view class="sum">合计 <text class="money">¥{{total}}</text>（{{count}} 件）</view>
+    <view class="submit {{count ? '' : 'off'}}" bindtap="onSubmit">去下单</view>
+  </view>
+</view>

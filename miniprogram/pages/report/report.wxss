@@ -1,0 +1,21 @@
+.page { min-height: 100vh; background: #f6f6f6; padding-bottom: 40rpx; }
+.head { background: #1f2d3d; color: #fff; padding: 30rpx; }
+.hello { font-size: 36rpx; font-weight: 700; }
+.sub { font-size: 24rpx; opacity: .7; margin-top: 6rpx; }
+.cards { display: flex; flex-wrap: wrap; gap: 16rpx; padding: 24rpx; }
+.card { flex: 1 1 42%; background: #fff; border-radius: 16rpx; padding: 24rpx; }
+.cl { color: #888; font-size: 24rpx; }
+.cv { font-size: 40rpx; font-weight: 700; margin-top: 8rpx; }
+.cv.orange { color: #e6a23c; }
+.cv.red { color: #e64340; }
+.sec { font-size: 28rpx; font-weight: 600; padding: 16rpx 30rpx 8rpx; }
+.week { background: #fff; margin: 0 24rpx; border-radius: 16rpx; padding: 16rpx 24rpx; }
+.wrow { display: flex; align-items: center; gap: 14rpx; padding: 8rpx 0; }
+.wdate { width: 90rpx; font-size: 24rpx; color: #666; }
+.wbarbg { flex: 1; height: 22rpx; background: #eef2ee; border-radius: 11rpx; overflow: hidden; }
+.wbar { height: 100%; background: #1f9d55; border-radius: 11rpx; }
+.wval { width: 140rpx; text-align: right; font-size: 24rpx; font-weight: 600; }
+.debt { background: #fff; margin: 0 24rpx 12rpx; border-radius: 16rpx; padding: 20rpx 24rpx; display: flex; justify-content: space-between; font-size: 28rpx; }
+.dval { color: #e64340; font-weight: 700; }
+.empty { text-align: center; color: #999; padding: 20rpx; font-size: 26rpx; }
+.foot { text-align: center; color: #e64340; padding: 40rpx 0 20rpx; font-size: 28rpx; }

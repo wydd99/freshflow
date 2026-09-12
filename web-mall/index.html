@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>鲜配订货</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f6f6f6; color: #222; }
+  .hide { display: none !important; }
+  /* 登录 */
+  #login { min-height: 100vh; background: #1f9d55; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+  #login .brand { color: #fff; text-align: center; margin-bottom: 28px; }
+  #login .brand b { font-size: 40px; letter-spacing: 8px; }
+  #login .brand p { opacity: .9; font-size: 14px; margin-top: 8px; }
+  #login .card { background: #fff; border-radius: 14px; padding: 30px 24px; width: 100%; max-width: 360px; }
+  #login input { width: 100%; border: none; border-bottom: 1px solid #eee; padding: 12px 4px; margin-bottom: 18px; font-size: 16px; outline: none; }
+  .pwdrow { position: relative; }
+  .pwdrow input { padding-right: 44px; }
+  .eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; opacity: .55; user-select: none; }
+  #login button { width: 100%; background: #1f9d55; color: #fff; border: none; border-radius: 24px; padding: 12px; font-size: 17px; }
+  #login .tip { text-align: center; color: #999; font-size: 12px; margin-top: 14px; }
+  .err { color: #e64340; font-size: 13px; margin-top: 12px; text-align: center; }
+  .hide2 { display: none !important; }
+  /* 主界面 */
+  header { position: sticky; top: 0; z-index: 5; background: #1f9d55; color: #fff; padding: 12px 16px; }
+  header .hello { font-size: 17px; font-weight: 600; }
+  header .sub { display: flex; justify-content: space-between; font-size: 13px; opacity: .95; margin-top: 6px; }
+  header select { border: none; background: rgba(255,255,255,.15); color: #fff; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+  header .logout { cursor: pointer; }
+  .cats { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; background: #fff; position: sticky; top: 66px; z-index: 4; }
+  .cat { padding: 6px 16px; border-radius: 16px; background: #f1f3f2; font-size: 13px; color: #444; }
+  .cat.on { background: #1f9d55; color: #fff; }
+  .goods { padding: 10px 12px 120px; }
+  .gcard { display: flex; align-items: center; justify-content: space-between; background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .gname { font-size: 16px; font-weight: 600; }
+  .gunit { color: #999; font-size: 12px; font-weight: 400; }
+  .gsub { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .price { color: #e64340; font-size: 17px; font-weight: 700; }
+  .stepper { display: flex; align-items: center; gap: 12px; }
+  .step { width: 30px; height: 30px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 20px; cursor: pointer; user-select: none; }
+  .minus { border: 1px solid #ccc; color: #666; }
+  .plus { background: #1f9d55; color: #fff; }
+  .qty { min-width: 24px; text-align: center; font-size: 16px; }
+  .qin { width: 70px; text-align: center; font-size: 16px; border: 1px solid #e2e2e2; border-radius: 8px; padding: 7px 2px; outline: none; }
+  .qin::-webkit-outer-spin-button, .qin::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .obar { display: flex; gap: 10px; padding: 12px; }
+  .obar button { border: none; padding: 8px 18px; border-radius: 18px; font-size: 14px; background: #fff; color: #444; cursor: pointer; }
+  .obar button.on { background: #1f9d55; color: #fff; }
+  .ocard { background: #fff; border-radius: 12px; padding: 14px; margin: 0 12px 10px; }
+  .orow { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #444; margin-top: 6px; }
+  .orow b { font-size: 15px; color: #222; }
+  .omoney { color: #e64340; font-weight: 700; }
+  .reorder { border: 1px solid #1f9d55; color: #1f9d55; background: #fff; border-radius: 16px; padding: 4px 14px; font-size: 12px; cursor: pointer; }
+  #orders .empty, #goods .empty { text-align: center; color: #999; padding: 60px 0; }
+  .cartbar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; background: #fff; padding: 12px 16px; box-shadow: 0 -4px 14px rgba(0,0,0,.07); z-index: 6; }
+  .sum { flex: 1; font-size: 15px; }
+  .money { color: #e64340; font-weight: 700; font-size: 19px; }
+  .submit { background: #1f9d55; color: #fff; font-size: 16px; padding: 11px 34px; border-radius: 24px; cursor: pointer; }
+  .submit.off { background: #c8c8c8; }
+  .empty { text-align: center; color: #999; padding: 60px 0; }
+  /* 订单页 */
+  .ocard { background: #fff; border-radius: 12px; padding: 14px; margin: 10px 12px; }
+  .orow { display: flex; justify-content: space-between; margin-top: 8px; font-size: 14px; color: #555; }
+  .omoney { color: #e64340; font-weight: 700; }
+  .obar { display: flex; gap: 10px; padding: 0 12px; }
+  .obar button { flex: 1; border: none; padding: 10px; border-radius: 10px; font-size: 15px; background: #fff; color: #333; }
+  .obar button.on { background: #1f9d55; color: #fff; }
+  /* 商品详情弹窗 */
+  .dmask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 20; display: flex; align-items: center; justify-content: center; }
+  .dcard { background: #fff; border-radius: 14px; width: 86%; max-width: 400px; padding: 20px; position: relative; }
+  .dclose { position: absolute; right: 12px; top: 8px; font-size: 20px; color: #999; cursor: pointer; }
+  .dimg { height: 110px; border-radius: 10px; background: #eef5ef; display: flex; align-items: center; justify-content: center; color: #1f9d55; font-size: 34px; font-weight: 700; letter-spacing: 6px; margin-bottom: 12px; }
+  .dname { font-size: 20px; font-weight: 700; }
+  .dmeta { font-size: 12px; color: #999; margin: 6px 0; }
+  .ddesc { font-size: 14px; color: #444; line-height: 1.7; white-space: pre-wrap; margin-bottom: 10px; }
+  .dprice { color: #e64340; font-size: 22px; font-weight: 700; margin-right: auto; }
+  .dbuy { background: #1f9d55; color: #fff; border: none; border-radius: 20px; padding: 9px 22px; font-size: 15px; cursor: pointer; }
+  .dbuy:disabled { background: #c8c8c8; }
+  /* 确认下单弹窗 */
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 20; display: flex; align-items: center; justify-content: center; }
+  .modal { background: #fff; border-radius: 14px; width: 86%; max-width: 400px; padding: 20px; }
+  .modal h3 { font-size: 17px; margin-bottom: 12px; }
+  .mline { font-size: 14px; color: #444; line-height: 1.9; }
+  .mtotal { text-align: right; font-weight: 700; margin-top: 10px; }
+  .mbtns { display: flex; gap: 10px; margin-top: 16px; }
+  .mbtns button { flex: 1; padding: 10px; border-radius: 22px; border: none; font-size: 15px; cursor: pointer; }
+  .mcancel { background: #f1f3f2; color: #444; }
+  .mok { background: #1f9d55; color: #fff; }
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="brand"><b>鲜配订货</b><p>示例商家A · 客户自助下单</p></div>
+  <div class="card">
+    <input id="lg-user" placeholder="账号" autocomplete="username">
+    <div class="pwdrow">
+      <input id="lg-pass" type="password" placeholder="密码" autocomplete="current-password">
+      <span id="eye" class="eye" onclick="togglePwd()" title="显示/隐藏密码">👁</span>
+    </div>
+    <button id="lg-btn" onclick="doLogin()">登 录</button>
+    <div id="lg-err" class="err hide2"></div>
+    <div class="tip">账号由配送站开通（联系业务员）</div>
+  </div>
+</div>
+
+<div id="main" class="hide">
+  <header>
+    <div class="hello" id="hello">…</div>
+    <div class="sub">
+      <span>发货日期
+        <select id="dd"></select>
+      </span>
+      <span>
+        <span id="nav-goods" class="logout" onclick="switchView('goods')">订货</span> ·
+        <span id="nav-orders" class="logout" onclick="switchView('orders')">我的订单</span> ·
+        <span class="logout" onclick="doLogout()">退出</span>
+      </span>
+    </div>
+  </header>
+
+  <div id="view-goods">
+    <div class="cats" id="cats"></div>
+    <div class="goods" id="goods"></div>
+    <div class="cartbar" id="cartbar">
+      <div class="sum">合计 <span class="money" id="cart-total">¥0.00</span>（<span id="cart-count">0</span> 件）</div>
+      <div class="submit off" id="cart-submit" onclick="confirmOrder()">去下单</div>
+    </div>
+  </div>
+
+  <div id="view-orders" class="hide">
+    <div class="obar">
+      <button class="on" onclick="loadOrders('all', this)">全部</button>
+      <button onclick="loadOrders('active', this)">进行中</button>
+      <button style="margin-left:auto;background:#fff;color:#1f9d55;border:1px solid #1f9d55" onclick="exportCsv()">导出明细</button>
+      <button style="background:#fff;color:#e6a23c;border:1px solid #e6a23c" onclick="showStatement()">月度对账单</button>
+    </div>
+    <div id="orders"></div>
+  </div>
+
+  <div id="modal" class="modal-mask hide">
+    <div class="modal">
+      <h3>确认下单 <span id="modal-date" style="font-size:13px;color:#888;font-weight:400"></span></h3>
+      <div id="modal-lines"></div>
+      <div class="mbtns">
+        <button class="mcancel" onclick="closeModal()">取消</button>
+        <button class="mok" onclick="submitOrder()">确认下单</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dmask" class="dmask hide">
+    <div class="dcard">
+      <div class="dclose" onclick="closeDetail()">✕</div>
+      <div class="dimg">鲜配</div>
+      <div class="dname" id="d-name"></div>
+      <div class="dmeta" id="d-meta"></div>
+      <div class="ddesc" id="d-desc"></div>
+      <div class="dbuy">
+        <span class="dprice" id="d-price"></span>
+        <div class="stepper">
+          <div class="step minus" onclick="dStep(-1)">−</div>
+          <div class="qty" id="d-qty">1</div>
+          <div class="step plus" onclick="dStep(1)">＋</div>
+        </div>
+        <button class="dbtn" onclick="addFromDetail()">加入购物车</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="stmask" class="dmask hide">
+    <div class="dcard" style="max-width: 480px">
+      <div class="dclose" onclick="closeStatement()">✕</div>
+      <h3 style="font-size:17px;margin-bottom:10px">月度对账单</h3>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+        <input type="month" id="st-month" style="border:1px solid #ddd;border-radius:8px;padding:6px 8px;font-size:14px" onchange="loadStatement()">
+        <div style="flex:1"></div>
+        <button class="reorder" onclick="printStatement()">🖨 打印 / 存 PDF</button>
+      </div>
+      <div id="st-body" style="max-height:50vh;overflow:auto"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ENV = 'freshflow-ENV_ID'
+const BASE = `https://${ENV}.api.tcloudbasegateway.com`
+
+function device() {
+  let d = localStorage.ff_device
+  if (!d) { d = 'web-' + Math.random().toString(36).slice(2); localStorage.ff_device = d }
+  return d
+}
+const token = () => localStorage.ff_access || ''
+const sub = () => localStorage.ff_sub || ''
+
+async function req(method, path, data, tk, extra) {
+  const r = await fetch(BASE + path, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-device-id': device(),
+      ...(tk ? { Authorization: 'Bearer ' + tk } : {}),
+      ...(extra || {}),
+    },
+    body: data ? JSON.stringify(data) : undefined,
+  })
+  if (r.status >= 400) throw { statusCode: r.status, body: await r.json().catch(() => ({})) }
+  const text = await r.text()
+  return text ? JSON.parse(text) : null
+}
+
+/** 刷新令牌（唯一入口，防并发重复刷新） */
+let refreshing = null
+async function refreshOnce() {
+  if (!localStorage.ff_refresh) throw { statusCode: 401, body: { error: 'no_refresh' } }
+  if (!refreshing) {
+    refreshing = req('POST', '/auth/v1/token', { grant_type: 'refresh_token', refresh_token: localStorage.ff_refresh })
+      .then((t) => {
+        localStorage.ff_access = t.access_token
+        localStorage.ff_refresh = t.refresh_token
+        return t.access_token
+      })
+      .finally(() => { refreshing = null })
+  }
+  return refreshing
+}
+
+/** 统一请求入口：401 自动刷新重试一次；再 401 = 会话彻底失效 */
+async function api(method, path, data, extra) {
+  try {
+    return await req(method, path, data, token(), extra)
+  } catch (e) {
+    if (e.statusCode === 401) {
+      try {
+        const at = await refreshOnce()
+        return await req(method, path, data, at, extra)
+      } catch (e2) {
+        // 会话彻底失效：清理并要求重新登录
+        localStorage.removeItem('ff_access'); localStorage.removeItem('ff_refresh'); localStorage.removeItem('ff_sub')
+        throw { statusCode: 401, final: true, body: (e2 && e2.body) || {} }
+      }
+    }
+    throw e
+  }
+}
+const rest = (table, q = '') => api('GET', `/v1/rdb/rest/${table}${q ? '?' + q : ''}`)
+// Prefer: return=representation —— 插入后返回新行（否则 201 空体，拿不到订单 id）
+function insert(table, rows) { return api('POST', `/v1/rdb/rest/${table}`, rows, { Prefer: 'return=representation' }) }
+const localToday = (offset = 0) => { const d = new Date(); d.setDate(d.getDate() + offset); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` }
+
+/* ---------- 登录 ---------- */
+function togglePwd() {
+  const i = document.getElementById('lg-pass')
+  i.type = i.type === 'password' ? 'text' : 'password'
+  document.getElementById('eye').textContent = i.type === 'password' ? '👁' : '🙈'
+}
+
+function showErr(msg) {
+  const el = document.getElementById('lg-err')
+  el.textContent = msg
+  el.classList.remove('hide2')
+}
+
+async function doLogin() {
+  const u = document.getElementById('lg-user').value.trim()
+  const p = document.getElementById('lg-pass').value
+  const errEl = document.getElementById('lg-err')
+  errEl.classList.add('hide2')
+  if (!u || !p) return showErr('请输入账号密码')
+  const btn = document.getElementById('lg-btn')
+  btn.textContent = '登录中…'
+  btn.disabled = true
+  try {
+    const r = await req('POST', '/auth/v1/signin', { username: u, password: p })
+    // 身份类型校验：只有店家（customer_user）能进商城，员工/管理员账号请走后台
+    const cu = await req('GET', `/v1/rdb/rest/customer_user?select=uid&uid=eq.${r.sub}`, undefined, r.access_token)
+    if (!Array.isArray(cu) || !cu.length) {
+      localStorage.removeItem('ff_access'); localStorage.removeItem('ff_refresh'); localStorage.removeItem('ff_sub')
+      return showErr('该账号为员工/管理员账号，请从后台站点登录')
+    }
+    localStorage.ff_access = r.access_token; localStorage.ff_refresh = r.refresh_token; localStorage.ff_sub = r.sub || ''
+    await enterMain()
+  } catch (e) {
+    const detail = (e.body && (e.body.error_description || e.body.message || e.body.error)) || e.message || ''
+    showErr('登录失败：' + (/failed to fetch|networkerror/i.test(detail) ? '网络异常，请检查网络后重试' : detail))
+  } finally {
+    btn.textContent = '登 录'
+    btn.disabled = false
+  }
+}
+document.getElementById('lg-pass').addEventListener('keyup', (e) => { if (e.key === 'Enter') doLogin() })
+
+function doLogout() {
+  ['ff_access', 'ff_refresh', 'ff_sub'].forEach((k) => localStorage.removeItem(k))
+  location.reload()
+}
+
+/* ---------- 主界面 ---------- */
+let customer = null, categories = [], allGoods = [], cart = {}, view = 'goods'
+
+function switchView(v) {
+  view = v
+  document.getElementById('view-goods').classList.toggle('hide', v !== 'goods')
+  document.getElementById('view-orders').classList.toggle('hide', v !== 'orders')
+  document.getElementById('nav-goods').style.fontWeight = v === 'goods' ? '700' : '400'
+  document.getElementById('nav-orders').style.fontWeight = v === 'orders' ? '700' : '400'
+  if (v === 'orders') loadOrders('all', document.querySelector('.obar button'))
+}
+
+async function enterMain() {
+  document.getElementById('login').classList.add('hide')
+  document.getElementById('main').classList.remove('hide')
+  // 下拉日期 今天/明天
+  const dd = document.getElementById('dd')
+  dd.innerHTML = `<option value="${localToday(0)}">今天 ${localToday(0)}</option><option value="${localToday(1)}">明天 ${localToday(1)}</option>`
+  const cu = (await rest('customer_user', `select=customer_id&uid=eq.${sub()}`)) || []
+  const cRows = (await rest('customer', `select=*&id=eq.${(cu[0] || {}).customer_id}`)) || []
+  customer = cRows[0] || {}
+  document.getElementById('hello').textContent = customer.name || '客户'
+  categories = (await rest('goods_category', 'select=*&order=sort')) || []
+  const goodsRows = (await rest('goods', 'select=*&status=eq.active&order=code')) || []
+  let visible = null
+  if (!customer.visible_all) {
+    const vis = (await rest('customer_visible_category', `select=category_id&customer_id=eq.${customer.id}`)) || []
+    visible = new Set(vis.map((v) => v.category_id))
+  }
+  const ids = goodsRows.map((g) => g.id)
+  const prices = ids.length ? (await rest('price', `select=*&goods_id=in.(${ids.join(',')})&valid_from=lte.${localToday()}&order=valid_from.desc`)) || [] : []
+  const pick = (gid, scope, value) => prices.find((p) => p.goods_id === gid && p.scope === scope && String(p.scope_value) === String(value))
+    allGoods = goodsRows
+    .filter((g) => g.allow_mall && (!visible || visible.has(g.category_id)))
+    .map((g) => {
+      const cust = pick(g.id, 'customer', customer.id)
+      const typ = pick(g.id, 'type', customer.level)
+      const price = cust ? Number(cust.price) : typ ? Number(typ.price) : Number(g.base_price)
+      return { ...g, salePrice: price, source: cust ? 'customer' : typ ? 'type' : 'base' }
+    })
+  renderCats(); renderGoods()
+}
+
+function renderCats() {
+  const el = document.getElementById('cats')
+  el.innerHTML = `<div class="cat on" data-id="">全部</div>` + categories.map((c) => `<div class="cat" data-id="${c.id}">${c.name}</div>`).join('')
+  el.querySelectorAll('.cat').forEach((n) => n.addEventListener('click', () => {
+    el.querySelectorAll('.cat').forEach((x) => x.classList.remove('on'))
+    n.classList.add('on')
+    renderGoods(n.dataset.id || null)
+  }))
+}
+
+let curCat = null
+function renderGoods(catId) {
+  // 无参/undefined = 全部；只有显式数字才按分类过滤（修首页空白 bug）
+  curCat = (catId === null || catId === undefined || catId === '') ? null : Number(catId)
+  const list = allGoods.filter((g) => curCat === null || g.category_id === curCat)
+  const el = document.getElementById('goods')
+  el.innerHTML = list.length ? list.map((g) => `
+    <div class="gcard">
+      <div style="cursor:pointer" onclick="openDetail(${g.id})">
+        <div class="gname">${g.name} <span class="gunit">/${g.unit}</span></div>
+        <div class="gsub"><span class="price">¥${g.salePrice.toFixed(2)}</span>
+        ${g.spec ? `<span style="font-size:11px;color:#999">${g.spec}</span>` : ''}</div>
+      </div>
+      <div class="stepper">
+        <div class="step minus" onclick="step(${g.id}, -1)">−</div>
+        <input class="qin" type="number" min="0" step="0.1" value="${cart[g.id] || 0}" id="q-${g.id}"
+          onchange="setQty(${g.id}, this.value)" oninput="setQty(${g.id}, this.value, true)">
+        <div class="step plus" onclick="step(${g.id}, 1)">＋</div>
+      </div>
+    </div>`).join('') : '<div class="empty">该分类暂无可见商品</div>'
+  refreshCartBar()
+}
+
+/* ---------- 商品详情弹窗（T3.6） ---------- */
+let detailGoods = null, detailQty = 1
+function openDetail(id) {
+  const g = allGoods.find((x) => x.id === Number(id))
+  if (!g) return
+  detailGoods = g; detailQty = 1
+  document.getElementById('d-name').textContent = g.name
+  document.getElementById('d-meta').textContent = `${g.unit} · ${g.tag || ''}${g.spec ? ' · ' + g.spec : ''}`
+  document.getElementById('d-desc').textContent = g.description || '暂无介绍'
+  document.getElementById('d-price').textContent = '¥' + g.salePrice.toFixed(2)
+  document.getElementById('d-qty').textContent = 1
+  document.getElementById('dmask').classList.remove('hide')
+}
+function closeDetail() { document.getElementById('dmask').classList.add('hide') }
+function dStep(d) {
+  detailQty = Math.max(1, detailQty + d)
+  document.getElementById('d-qty').textContent = detailQty
+}
+function addFromDetail() {
+  if (!detailGoods) return
+  cart[detailGoods.id] = (cart[detailGoods.id] || 0) + detailQty
+  const el = document.getElementById('q-' + detailGoods.id)
+  if (el) el.textContent = cart[detailGoods.id]
+  refreshCartBar()
+  closeDetail()
+  ElMessageTransient('已加入购物车')
+}
+function ElMessageTransient(msg) {
+  const t = document.createElement('div')
+  t.textContent = msg
+  t.style.cssText = 'position:fixed;top:20%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:#fff;padding:8px 18px;border-radius:8px;font-size:14px;z-index:99'
+  document.body.appendChild(t)
+  setTimeout(() => t.remove(), 1200)
+}
+
+function step(id, d) {
+  const next = Math.max(0, Math.round(((cart[id] || 0) + d) * 100) / 100)
+  if (next <= 0) delete cart[id]; else cart[id] = next
+  const el = document.getElementById('q-' + id)
+  if (el) el.value = cart[id] || 0
+  refreshCartBar()
+}
+
+/** 直接输入数量（支持 0.5 半斤等小数）；skipRender=输入中不重绘避免打断 */
+function setQty(id, v, skipRender) {
+  const n = parseFloat(v)
+  const next = (!isNaN(n) && n > 0) ? Math.round(n * 100) / 100 : 0
+  if (next <= 0) delete cart[id]; else cart[id] = next
+  if (!skipRender) {
+    const el = document.getElementById('q-' + id)
+    if (el) el.value = cart[id] || 0
+  }
+  refreshCartBar()
+}
+
+function refreshCartBar() {
+  let count = 0, total = 0
+  for (const id in cart) {
+    const g = allGoods.find((x) => x.id === Number(id))
+    if (!g) continue
+    count += cart[id]; total += cart[id] * g.salePrice
+  }
+  document.getElementById('cart-total').textContent = '¥' + total.toFixed(2)
+  document.getElementById('cart-count').textContent = count
+  document.getElementById('cart-submit').classList.toggle('off', !count)
+}
+
+let pendingOrder = null
+function confirmOrder() {
+  const ids = Object.keys(cart)
+  if (!ids.length || !customer.id) return
+  const lines = [], items = []
+  let total = 0
+  for (const id of ids) {
+    const g = allGoods.find((x) => x.id === Number(id))
+    const amount = Math.round(cart[id] * g.salePrice * 100) / 100
+    total += amount
+    lines.push(`${g.name} × ${cart[id]}${g.unit}`)
+    items.push({
+      tenant_id: customer.tenant_id, goods_id: g.id, goods_name: g.name, unit: g.unit,
+      order_qty: cart[id], order_price: g.salePrice, price_source: g.source || 'base',
+      amount, status: 'pending',
+    })
+  }
+  pendingOrder = { items, total: Number(total.toFixed(2)), dd: document.getElementById('dd').value }
+  document.getElementById('modal-date').textContent = `（${pendingOrder.dd}）`
+  document.getElementById('modal-lines').innerHTML =
+    lines.map((l) => `<div class="mline">${l}</div>`).join('') +
+    `<div class="mtotal">合计 ¥${pendingOrder.total.toFixed(2)}</div>`
+  document.getElementById('modal').classList.remove('hide')
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hide')
+  pendingOrder = null
+}
+
+async function submitOrder() {
+  if (!pendingOrder) return
+  const { items, total, dd } = pendingOrder
+  document.getElementById('modal').classList.add('hide')
+  try {
+    const ymd = localToday().replace(/-/g, '')
+    const todays = (await rest('order_main', `select=order_no&created_at=gte.${ymd}T00:00:00Z`)) || []
+    const orderNo = `OR_${ymd}${String(todays.length + 1).padStart(4, '0')}`
+    const created = await insert('order_main', {
+      tenant_id: customer.tenant_id, order_no: orderNo, customer_id: customer.id,
+      source: 'mall', delivery_date: dd, status: 'draft',
+      amount_original: total, sort_total: items.length, remark: '网页商城自下单',
+    })
+    let order = Array.isArray(created) ? created[0] : created
+    if (!order || !order.id) {
+      const back = (await rest('order_main', `select=*&order_no=eq.${orderNo}`)) || []
+      order = back[0]
+    }
+    if (!order || !order.id) throw new Error('订单创建后未查询到，请勿重复提交，截图联系配送站')
+    await insert('order_item', items.map((p) => ({ ...p, order_id: order.id })))
+    cart = {}
+    refreshCartBar(); renderGoods(curCat)
+    alert(`下单成功 ${orderNo}，配送站会尽快确认`)
+  } catch (e) {
+    if (e.statusCode === 401) { alert('登录已过期，请重新登录后再下单'); doLogout(); return }
+    alert('提交失败：' + ((e.body && (e.body.message || e.body.error)) || '请重试'))
+  }
+}
+
+/* ---------- 我的订单 ---------- */
+const STATUS = { draft: '草单', confirmed: '已确认', sorting: '分拣中', ready: '待发货', shipped: '已发货', done: '已完成', void: '已作废' }
+let orderRows = []
+
+async function loadOrders(mode, btn) {
+  document.querySelectorAll('.obar button').forEach((b) => b.classList.remove('on'))
+  if (btn) btn.classList.add('on')
+  const rows = (await rest('order_main', 'select=*&order=created_at.desc&limit=50')) || []
+  orderRows = mode === 'active' ? rows.filter((o) => !['done', 'void'].includes(o.status)) : rows
+  renderOrders()
+}
+
+function renderOrders() {
+  document.getElementById('orders').innerHTML = orderRows.length ? orderRows.map((o) => `
+    <div class="ocard">
+      <div class="orow" style="margin-top:0"><b>${o.order_no}</b><span>${STATUS[o.status] || o.status}</span></div>
+      <div class="orow"><span>发货 ${o.delivery_date}</span><span class="omoney">¥${Number(o.amount_original ?? 0).toFixed(2)}</span></div>
+      <div class="orow"><span></span><button class="reorder" onclick="reorder(${o.id})">↻ 按此单再来一单</button></div>
+    </div>`).join('') : '<div class="empty">还没有订单</div>'
+}
+
+/** 再来一单（T2.12c）：拉旧单明细 → 只留在售商品按今日价重算 → 进确认弹窗 */
+async function reorder(orderId) {
+  wxStyleLoading(true)
+  try {
+    const items = (await rest('order_item', `select=*&order_id=eq.${orderId}&status=neq.void`)) || []
+    if (!items.length) { wxStyleLoading(false); return alert('该订单没有可复制的明细') }
+    const lines = []
+    let total = 0
+    for (const it of items) {
+      const g = allGoods.find((x) => x.id === it.goods_id)
+      if (!g) continue // 已下架/不可见商品跳过
+      const qty = Number(it.order_qty)
+      const amount = Math.round(qty * g.salePrice * 100) / 100
+      total += amount
+      lines.push({ goods: g, qty, amount })
+    }
+    wxStyleLoading(false)
+    if (!lines.length) return alert('该订单的商品均已下架，无法复制')
+    pendingOrder = {
+      items: lines.map((l) => ({
+        tenant_id: customer.tenant_id, goods_id: l.goods.id, goods_name: l.goods.name, unit: l.goods.unit,
+        order_qty: l.qty, order_price: l.goods.salePrice, price_source: l.goods.source || 'base',
+        amount: l.amount, status: 'pending',
+      })),
+      total: Number(total.toFixed(2)),
+      dd: document.getElementById('dd').value,
+    }
+    document.getElementById('modal-date').textContent = `（${pendingOrder.dd}）`
+    document.getElementById('modal-lines').innerHTML =
+      lines.map((l) => `<div class="mline">${l.goods.name} × ${l.qty}${l.goods.unit}　<span style="color:#999">¥${l.amount.toFixed(2)}</span></div>`).join('') +
+      `<div class="mtotal">合计 ¥${pendingOrder.total.toFixed(2)}（按今日价格重算）</div>`
+    document.getElementById('modal').classList.remove('hide')
+  } catch (e) {
+    wxStyleLoading(false)
+    alert('复制订单失败：' + ((e.body && e.body.message) || '请重试'))
+  }
+}
+
+function wxStyleLoading(on) {
+  if (on) {
+    window.__ffL = document.createElement('div')
+    window.__ffL.textContent = '加载中…'
+    window.__ffL.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;z-index:60;font-size:15px'
+    document.body.appendChild(window.__ffL)
+  } else if (window.__ffL) { window.__ffL.remove(); window.__ffL = null }
+}
+
+/* ---------- 客户侧月度对账单（T2.14 客户自助，RLS 只见自己数据） ---------- */
+let stCache = null
+function showStatement() {
+  document.getElementById('stmask').classList.remove('hide')
+  const m = document.getElementById('st-month')
+  if (!m.value) m.value = localToday().slice(0, 7)
+  loadStatement()
+}
+function closeStatement() { document.getElementById('stmask').classList.add('hide') }
+
+async function loadStatement() {
+  const ym = document.getElementById('st-month').value || localToday().slice(0, 7)
+  const body = document.getElementById('st-body')
+  body.innerHTML = '<div class="empty">加载中…</div>'
+  try {
+    wxStyleLoading(true)
+    const rows = (await rest('payment_ledger', 'select=*&order=created_at.asc')) || []
+    const orders = (await rest('order_main', 'select=id,order_no')) || []
+    wxStyleLoading(false)
+    const omap = new Map(orders.map((o) => [o.id, o.order_no]))
+    const inM = rows.filter((r) => (r.created_at || '').startsWith(ym))
+    const before = rows.filter((r) => (r.created_at || '') < ym)
+    const bal = (list) => list.reduce((s, r) => s + (r.direction === 'receivable' ? Number(r.amount) : -Number(r.amount)), 0)
+    stCache = {
+      month: ym,
+      customer: (customer && customer.name) || '',
+      opening: bal(before),
+      closing: bal(rows),
+      receivable: inM.filter((r) => r.direction === 'receivable').reduce((s, r) => s + Number(r.amount), 0),
+      received: inM.filter((r) => r.direction === 'received').reduce((s, r) => s + Number(r.amount), 0),
+      flows: inM.map((r) => ({
+        date: (r.created_at || '').slice(0, 10),
+        dir: r.direction === 'receivable' ? '应收' : '收款',
+        no: r.order_id ? (omap.get(r.order_id) || '-') : '收款',
+        amount: Number(r.amount),
+        bal: r.balance_after != null ? Number(r.balance_after) : null,
+      })),
+    }
+    const d = stCache
+    body.innerHTML = d.flows.length ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;font-size:12px">
+        <div style="background:#f6f6f6;border-radius:8px;padding:8px">期初欠款<br><b>¥${d.opening.toFixed(2)}</b></div>
+        <div style="background:#fff7e6;border-radius:8px;padding:8px">本月应收<br><b style="color:#e6a23c">¥${d.receivable.toFixed(2)}</b></div>
+        <div style="background:#f0fdf4;border-radius:8px;padding:8px">本月收款<br><b style="color:#1f9d55">¥${d.received.toFixed(2)}</b></div>
+        <div style="background:#fdeeee;border-radius:8px;padding:8px">期末欠款<br><b style="color:#e64340">¥${d.closing.toFixed(2)}</b></div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr>${['日期','方向','单号','金额','余额'].map((h) => `<th style="border-bottom:1px solid #eee;padding:5px;text-align:left">${h}</th>`).join('')}</tr></thead>
+        <tbody>${d.flows.map((f) => `<tr>
+          <td style="padding:5px;border-bottom:1px solid #f5f5f5">${f.date}</td>
+          <td style="padding:5px;border-bottom:1px solid #f5f5f5">${f.dir}</td>
+          <td style="padding:5px;border-bottom:1px solid #f5f5f5">${f.no}</td>
+          <td style="padding:5px;border-bottom:1px solid #f5f5f5;text-align:right">¥${f.amount.toFixed(2)}</td>
+          <td style="padding:5px;border-bottom:1px solid #f5f5f5;text-align:right">${f.bal != null ? '¥' + f.bal.toFixed(2) : '-'}</td>
+        </tr>`).join('')}</tbody>
+      </table>`
+      : '<div class="empty">该月份暂无往来记录</div>'
+  } catch (e) {
+    wxStyleLoading(false)
+    body.innerHTML = '<div class="empty">加载失败，请重试</div>'
+  }
+}
+
+function printStatement() {
+  if (!stCache || !stCache.flows.length) return alert('该月份暂无对账数据')
+  const d = stCache
+  const rows = d.flows.map((f) =>
+    `<tr><td>${f.date}</td><td>${f.dir}</td><td>${f.no}</td><td class="r">${f.amount.toFixed(2)}</td><td class="r">${f.bal != null ? f.bal.toFixed(2) : '-'}</td></tr>`).join('')
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>对账单</title>
+<style>@page{size:A4;margin:14mm}*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei";color:#000;font-size:11pt}
+h2{text-align:center;letter-spacing:6px;margin-bottom:4mm}
+.sub{text-align:center;color:#444;margin-bottom:6mm}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:2mm;margin-bottom:4mm}
+table{width:100%;border-collapse:collapse}th,td{border:1px solid #000;padding:1.6mm;font-size:10pt}
+th{background:#f2f2f2}.r{text-align:right}
+.sum{margin-top:3mm;font-weight:700}
+.foot{margin-top:10mm;display:flex;justify-content:space-between}</style></head><body>
+<h2>月度对账单</h2>
+<div class="sub">鲜配 · 示例商家A</div>
+<div class="meta"><div>客户：${d.customer}</div><div>月份：${d.month}</div>
+<div>期初欠款：¥${d.opening.toFixed(2)}</div><div>期末欠款：¥${d.closing.toFixed(2)}</div></div>
+<table><thead><tr><th>日期</th><th>方向</th><th>关联单号</th><th>金额</th><th>余额</th></tr></thead><tbody>${rows}</tbody></table>
+<div class="sum">本月应收合计 ¥${d.receivable.toFixed(2)}　本月收款合计 ¥${d.received.toFixed(2)}　期末欠款 ¥${d.closing.toFixed(2)}</div>
+<div class="foot"><div>制单：＿＿＿＿</div><div>客户确认（盖章）：＿＿＿＿</div></div>
+</body></html>`
+  const iframe = document.createElement('iframe')
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
+  document.body.appendChild(iframe)
+  iframe.srcdoc = html
+  iframe.onload = () => { iframe.contentWindow.focus(); iframe.contentWindow.print(); setTimeout(() => iframe.remove(), 1000) }
+}
+
+function exportCsv() {
+  if (!orderRows.length) return alert('暂无订单可导出')
+  const rows = [['单号', '发货日期', '状态', '金额']]
+  for (const o of orderRows) rows.push([o.order_no, o.delivery_date, STATUS[o.status] || o.status, Number(o.amount_original ?? 0).toFixed(2)])
+  const total = orderRows.reduce((s, o) => s + Number(o.amount_original ?? 0), 0)
+  rows.push(['合计', '', '', total.toFixed(2)])
+  const csv = '\ufeff' + rows.map((r) => r.join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `对账单_${localToday()}.csv`
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+/* ---------- 启动 ---------- */
+(async () => {
+  if (token()) {
+    try { await enterMain(); return } catch (e) { /* 会话失效走登录 */ }
+  }
+  document.getElementById('login').classList.remove('hide')
+})()
+</script>
+</body>
+</html>

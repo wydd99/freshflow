@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- FreshFlow 打印模板①：A4 纯文字竖排配货单（需求#4：给配货员装货，无表格线、只要品名+数量） -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>配货单（纯文字版）</title>
+<style>
+  @page { size: A4 portrait; margin: 14mm 16mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", "SimHei", sans-serif; color: #000; }
+  .head { text-align: center; margin-bottom: 6mm; }
+  .head .cust { font-size: 26pt; font-weight: 700; letter-spacing: 2px; }
+  .head .meta { font-size: 12pt; margin-top: 3mm; color: #222; }
+  .items { margin-top: 4mm; }
+  .line { display: flex; align-items: baseline; font-size: 17pt; line-height: 2.05; }
+  .line .name { flex: 0 0 46%; font-weight: 600; }
+  .line .dots { flex: 1; border-bottom: 1px dotted #999; margin: 0 4mm; transform: translateY(-4px); }
+  .line .qty  { flex: 0 0 auto; font-weight: 700; font-size: 18pt; min-width: 34mm; text-align: right; }
+  .foot { margin-top: 10mm; padding-top: 3mm; border-top: 1px solid #bbb;
+          font-size: 10.5pt; color: #333; display: flex; justify-content: space-between; }
+  .noprint { position: fixed; top: 8px; right: 8px; }
+  @media print { .noprint { display: none; } }
+</style>
+</head>
+<body>
+<button class="noprint" onclick="window.print()">打印</button>
+
+<div class="head">
+  <div class="cust">客户甲</div>
+  <div class="meta">发货日期：2026-09-12（周六）　时段：早5:00-7:00　共 6 个品 / 9 件　单号 OR_202609110001</div>
+</div>
+
+<div class="items">
+  <div class="line"><span class="name">香菜</span><span class="dots"></span><span class="qty">1 斤</span></div>
+  <div class="line"><span class="name">小葱</span><span class="dots"></span><span class="qty">1 斤</span></div>
+  <div class="line"><span class="name">素丸子</span><span class="dots"></span><span class="qty">2 斤</span></div>
+  <div class="line"><span class="name">奶白菜</span><span class="dots"></span><span class="qty">3 斤</span></div>
+  <div class="line"><span class="name">土豆</span><span class="dots"></span><span class="qty">10 斤</span></div>
+  <div class="line"><span class="name">海天生抽</span><span class="dots"></span><span class="qty">2 瓶</span></div>
+</div>
+
+<div class="foot">
+  <span>打印时间：2026-09-11 21:30　制单：智能录单（语音）</span>
+  <span>鲜配 · 配货单（装货用，数量以实际称重为准）</span>
+</div>
+</body>
+</html>

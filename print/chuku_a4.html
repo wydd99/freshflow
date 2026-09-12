@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- FreshFlow 打印模板②：A4 表格出库单/送货单（需求#14；实拣口径金额，需求#18） -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>送货单（表格版）</title>
+<style>
+  @page { size: A4 portrait; margin: 12mm 12mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", sans-serif; color: #000; font-size: 11pt; }
+  .title { text-align: center; font-size: 20pt; font-weight: 700; letter-spacing: 8px; }
+  .sub { text-align: center; font-size: 10pt; color: #444; margin-top: 1mm; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 8mm; margin: 4mm 0 3mm; font-size: 11pt; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #000; padding: 1.6mm 2mm; font-size: 10.5pt; }
+  th { background: #f2f2f2; font-weight: 700; }
+  td.r, th.r { text-align: right; }
+  td.c, th.c { text-align: center; }
+  tr.total td { font-weight: 700; background: #fafafa; }
+  .cap { margin-top: 2.5mm; font-size: 11pt; }
+  .cap b { letter-spacing: 1px; }
+  .sign { display: flex; justify-content: space-between; margin-top: 10mm; font-size: 11pt; }
+  .sign span { display: inline-block; width: 30%; border-bottom: 1px solid #000; height: 8mm; }
+  .foot { margin-top: 6mm; padding-top: 2mm; border-top: 1px dashed #888;
+          font-size: 9.5pt; color: #333; display: flex; justify-content: space-between; }
+  .noprint { position: fixed; top: 8px; right: 8px; }
+  @media print { .noprint { display: none; } }
+</style>
+</head>
+<body>
+<button class="noprint" onclick="window.print()">打印</button>
+
+<div class="title">送 货 单</div>
+<div class="sub">鲜配 · 示例商家A　电话 138-XXXX-XXXX</div>
+
+<div class="meta">
+  <div>客户：客户甲</div>
+  <div>单号：OR_202609110001</div>
+  <div>收货地址：XX 路 XX 号（后厨西门）</div>
+  <div>发货日期：2026-09-12</div>
+  <div>送货人：＿＿＿＿　电话：＿＿＿＿</div>
+  <div>打印时间：2026-09-12 06:10（第1次打印）</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th class="c" style="width:8mm">序</th><th>品名</th><th class="c" style="width:16mm">单位</th>
+      <th class="r" style="width:20mm">数量</th><th class="r" style="width:20mm">单价</th>
+      <th class="r" style="width:24mm">金额</th><th style="width:30mm">备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td class="c">1</td><td>香菜</td><td class="c">斤</td><td class="r">1.00</td><td class="r">8.00</td><td class="r">8.00</td><td></td></tr>
+    <tr><td class="c">2</td><td>小葱</td><td class="c">斤</td><td class="r">1.00</td><td class="r">6.00</td><td class="r">6.00</td><td></td></tr>
+    <tr><td class="c">3</td><td>素丸子</td><td class="c">斤</td><td class="r">2.12</td><td class="r">12.00</td><td class="r">25.44</td><td>实称</td></tr>
+    <tr><td class="c">4</td><td>奶白菜</td><td class="c">斤</td><td class="r">3.00</td><td class="r">5.50</td><td class="r">16.50</td><td></td></tr>
+    <tr><td class="c">5</td><td>土豆</td><td class="c">斤</td><td class="r">10.00</td><td class="r">2.80</td><td class="r">28.00</td><td></td></tr>
+    <tr><td class="c">6</td><td>海天生抽</td><td class="c">瓶</td><td class="r">2.00</td><td class="r">9.90</td><td class="r">19.80</td><td>标品</td></tr>
+    <tr class="total"><td class="c" colspan="3">合计</td><td class="r">19.12</td><td class="c">—</td><td class="r">103.74</td><td></td></tr>
+  </tbody>
+</table>
+
+<div class="cap">人民币大写：壹佰零叁元柒角肆分　　（实收数量如有出入，请在签收时注明，当日联系调整）</div>
+
+<div class="sign">
+  <div>制单：商家A</div><div>送货人签字：</div><div>客户签字：</div>
+</div>
+
+<div class="foot">
+  <span>第一联：客户存根（红）　第二联：客户结算（白）　第三联：司机留存</span>
+  <span>最后修改：2026-09-12 06:02 由 商家A 改重（素丸子 2斤→2.12斤）</span>
+</div>
+</body>
+</html>

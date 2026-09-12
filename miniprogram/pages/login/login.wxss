@@ -1,0 +1,9 @@
+.wrap { min-height: 100vh; background: #1f9d55; padding: 60rpx 40rpx; box-sizing: border-box; }
+.brand { color: #fff; text-align: center; margin: 60rpx 0 60rpx; }
+.logo { font-size: 64rpx; font-weight: 700; letter-spacing: 8rpx; }
+.slogan { font-size: 26rpx; opacity: 0.9; margin-top: 12rpx; }
+.card { background: #fff; border-radius: 20rpx; padding: 50rpx 40rpx; }
+.ipt { border-bottom: 1rpx solid #eee; padding: 20rpx 8rpx; margin-bottom: 30rpx; font-size: 30rpx; }
+.btn { background: #1f9d55; color: #fff; font-size: 32rpx; border-radius: 44rpx; }
+.btn::after { border: none; }
+.tip { text-align: center; color: #999; font-size: 24rpx; margin-top: 24rpx; }

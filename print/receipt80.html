@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- FreshFlow 打印模板③：80mm 热敏小票送货单（需求#14；同数据第三种版式） -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>送货单（80mm小票）</title>
+<style>
+  @page { size: 80mm auto; margin: 2.5mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 75mm; font-family: "SimSun", "Microsoft YaHei", monospace; color: #000; font-size: 10.5pt; }
+  .shop { text-align: center; font-size: 13pt; font-weight: 700; }
+  .sub  { text-align: center; font-size: 9pt; }
+  .meta { font-size: 9.5pt; margin: 2mm 0; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 1.5mm 0; }
+  .meta div { display: flex; justify-content: space-between; line-height: 1.5; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+  th { border-bottom: 1px dashed #000; text-align: left; font-weight: 400; }
+  td { line-height: 1.55; }
+  td.r { text-align: right; }
+  tr.total td { border-top: 1px dashed #000; font-weight: 700; font-size: 11pt; }
+  .cap { font-size: 9.5pt; margin-top: 1mm; }
+  .foot { text-align: center; font-size: 9pt; margin-top: 2.5mm; }
+  .noprint { position: fixed; top: 8px; right: 8px; }
+  @media print { .noprint { display: none; } }
+</style>
+</head>
+<body>
+<button class="noprint" onclick="window.print()">打印</button>
+
+<div class="shop">鲜配 · 送货单</div>
+<div class="sub">示例商家A　138-XXXX-XXXX</div>
+
+<div class="meta">
+  <div><span>客户</span><span>客户甲</span></div>
+  <div><span>单号</span><span>OR_202609110001</span></div>
+  <div><span>日期</span><span>2026-09-12 06:10</span></div>
+</div>
+
+<table>
+  <thead>
+    <tr><th>品名</th><th class="r">数量</th><th class="r">单价</th><th class="r">金额</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>香菜</td><td class="r">1斤</td><td class="r">8.00</td><td class="r">8.00</td></tr>
+    <tr><td>小葱</td><td class="r">1斤</td><td class="r">6.00</td><td class="r">6.00</td></tr>
+    <tr><td>素丸子</td><td class="r">2.12斤</td><td class="r">12.00</td><td class="r">25.44</td></tr>
+    <tr><td>奶白菜</td><td class="r">3斤</td><td class="r">5.50</td><td class="r">16.50</td></tr>
+    <tr><td>土豆</td><td class="r">10斤</td><td class="r">2.80</td><td class="r">28.00</td></tr>
+    <tr><td>海天生抽</td><td class="r">2瓶</td><td class="r">9.90</td><td class="r">19.80</td></tr>
+    <tr class="total"><td class="r" colspan="3">合计（实拣）</td><td class="r">103.74</td></tr>
+  </tbody>
+</table>
+
+<div class="cap">大写：壹佰零叁元柒角肆分</div>
+
+<div class="foot">
+  数量以实际称重为准，有异议当日联系<br>
+  客户签字：＿＿＿＿＿＿　谢谢惠顾
+</div>
+</body>
+</html>

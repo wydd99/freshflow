@@ -1,0 +1,26 @@
+<view class="page">
+  <view wx:for="{{orders}}" wx:key="id" class="card">
+    <view class="row1">
+      <text class="no">{{item.order_no}}</text>
+      <text class="status {{item.status}}">{{item.statusLabel}}</text>
+    </view>
+    <view class="row2">
+      <text>发货：{{item.delivery_date}}</text>
+      <text class="money">¥{{item.total}}</text>
+    </view>
+    <view class="row3">
+      <button class="rbtn" size="mini" data-id="{{item.id}}" loading="{{reordering === item.id}}" bindtap="onReorder">↻ 按此单再来一单</button>
+    </view>
+  </view>
+  <view wx:if="{{!orders.length}}" class="empty">还没有订单，去订货页下一单吧</view>
+  <view class="pwdsec">
+    <view class="ptitle" bindtap="togglePwdSec">{{ pwdOpen ? '收起修改密码 ▲' : '修改密码 ▼' }}</view>
+    <view wx:if="{{pwdOpen}}">
+      <input class="pin" type="password" placeholder="旧密码" value="{{oldPwd}}" bindinput="onOld" />
+      <input class="pin" type="password" placeholder="新密码（首字母大写+小写+数字）" value="{{newPwd}}" bindinput="onNew" />
+      <input class="pin" type="password" placeholder="确认新密码" value="{{newPwd2}}" bindinput="onNew2" />
+      <button class="pbtn" size="mini" loading="{{saving}}" bindtap="savePwd">保存新密码</button>
+    </view>
+  </view>
+  <view class="logout" bindtap="onLogout">退出登录</view>
+</view>

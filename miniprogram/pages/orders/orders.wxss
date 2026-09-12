@@ -1,0 +1,19 @@
+.page { padding: 24rpx; }
+.card { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; }
+.row1 { display: flex; justify-content: space-between; align-items: center; }
+.no { font-size: 28rpx; font-weight: 600; }
+.status { font-size: 24rpx; }
+.status.draft { color: #999; }
+.status.confirmed, .status.sorting, .status.ready { color: #e6a23c; }
+.status.shipped, .status.done { color: #1f9d55; }
+.status.void { color: #e64340; }
+.row2 { display: flex; justify-content: space-between; margin-top: 12rpx; color: #666; font-size: 26rpx; }
+.money { color: #e64340; font-weight: 700; }
+.row3 { display: flex; justify-content: flex-end; margin-top: 10rpx; }
+.rbtn { background: #fff; color: #1f9d55; border: 1rpx solid #1f9d55; font-size: 24rpx; border-radius: 28rpx; padding: 0 24rpx; }
+.empty { text-align: center; color: #999; padding: 100rpx 0; }
+.logout { text-align: center; color: #e64340; padding: 40rpx 0; font-size: 28rpx; }
+.pwdsec { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-top: 16rpx; }
+.ptitle { font-size: 28rpx; color: #333; }
+.pin { border-bottom: 1rpx solid #eee; padding: 14rpx 6rpx; margin-bottom: 18rpx; font-size: 28rpx; }
+.pbtn { background: #1f9d55; color: #fff; }

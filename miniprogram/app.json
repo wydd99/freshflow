@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/orders/orders",
+    "pages/report/report"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#1f9d55",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "鲜配订货",
+    "backgroundColor": "#f6f6f6"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
