@@ -12,5 +12,11 @@
     "backgroundColor": "#f6f6f6"
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.record": {
+      "desc": "用于语音下单：把您说的话转成订货清单"
+    }
+  },
+  "requiredPrivateInfos": []
 }
