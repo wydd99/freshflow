@@ -1,0 +1,591 @@
+{
+ "doc_type": "handwrite",
+ "customer_hint": "兰亭宴",
+ "date_hint": "8.26",
+ "items": [
+  {
+   "raw": "茄 5斤",
+   "name": "茄",
+   "qty": 5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "黄耳菌 1盒",
+   "name": "黄耳菌",
+   "qty": 1,
+   "unit": "盒",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "芥兰苗 4盒",
+   "name": "芥兰苗",
+   "qty": 4,
+   "unit": "盒",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "口蘑 4斤",
+   "name": "口蘑",
+   "qty": 4,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "火红苗 1盒",
+   "name": "火红苗",
+   "qty": 1,
+   "unit": "盒",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "芥兰 3斤",
+   "name": "芥兰",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "酸膜叶 1盒",
+   "name": "酸膜叶",
+   "qty": 1,
+   "unit": "盒",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "苹果丝瓜 2斤",
+   "name": "苹果丝瓜",
+   "qty": 2,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "贝贝南瓜 2个",
+   "name": "贝贝南瓜",
+   "qty": 2,
+   "unit": "个",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "包菜 1个",
+   "name": "包菜",
+   "qty": 1,
+   "unit": "个",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "金瓜 3个+1个",
+   "name": "金瓜",
+   "qty": 4,
+   "unit": "个",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "青南瓜 4斤",
+   "name": "青南瓜",
+   "qty": 4,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "芥兰苗 4斤",
+   "name": "芥兰苗",
+   "qty": 4,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "红椒 4斤",
+   "name": "红椒",
+   "qty": 4,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "苋菜 6斤",
+   "name": "苋菜",
+   "qty": 6,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "拉菜 3斤",
+   "name": "拉菜",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "山药苗 3斤",
+   "name": "山药苗",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "空心菜 3斤",
+   "name": "空心菜",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "红辣椒 1斤",
+   "name": "红辣椒",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "土辣椒 1斤",
+   "name": "土辣椒",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "菜瓜 3斤",
+   "name": "菜瓜",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "藕带 3斤",
+   "name": "藕带",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "空心菜 2盒",
+   "name": "空心菜",
+   "qty": 2,
+   "unit": "盒",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "小米辣 1斤",
+   "name": "小米辣",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "观音菜 1斤",
+   "name": "观音菜",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "小葱 0.5斤",
+   "name": "小葱",
+   "qty": 0.5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "奶油蝶 1斤",
+   "name": "奶油蝶",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "洋葱 10斤",
+   "name": "洋葱",
+   "qty": 10,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "苦菊 1斤",
+   "name": "苦菊",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "青蒜叶 1斤",
+   "name": "青蒜叶",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "紫叶生菜",
+   "name": "紫叶生菜",
+   "qty": null,
+   "unit": null,
+   "price": null,
+   "confidence": "low"
+  },
+  {
+   "raw": "土猪肉 15斤",
+   "name": "土猪肉",
+   "qty": 15,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "蛋饺 2盒",
+   "name": "蛋饺",
+   "qty": 2,
+   "unit": "盒",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "排骨 3斤",
+   "name": "排骨",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "五花肉 10斤",
+   "name": "五花肉",
+   "qty": 10,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "羊排 10斤",
+   "name": "羊排",
+   "qty": 10,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "锅牛腩 15斤",
+   "name": "牛腩",
+   "qty": 15,
+   "unit": "斤",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "猪手 15个",
+   "name": "猪手",
+   "qty": 15,
+   "unit": "个",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "羊腰肉 4斤",
+   "name": "羊腰肉",
+   "qty": 4,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "肉沫 0.5斤",
+   "name": "肉沫",
+   "qty": 0.5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "笨老蚕豆 1包",
+   "name": "蚕豆",
+   "qty": 1,
+   "unit": "包",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "鳗鱼 3条",
+   "name": "鳗鱼",
+   "qty": 3,
+   "unit": "条",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "河虾 1斤",
+   "name": "河虾",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "石斑鱼 4条",
+   "name": "石斑鱼",
+   "qty": 4,
+   "unit": "条",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "桂鱼 3条",
+   "name": "桂鱼",
+   "qty": 3,
+   "unit": "条",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "六月黄 12只",
+   "name": "六月黄",
+   "qty": 12,
+   "unit": "只",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "大白丝 2条",
+   "name": "大白丝",
+   "qty": 2,
+   "unit": "条",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "黄鳝(条) 5斤",
+   "name": "黄鳝",
+   "qty": 5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "生粉 1袋",
+   "name": "生粉",
+   "qty": 1,
+   "unit": "袋",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "羊肚菌 1袋",
+   "name": "羊肚菌",
+   "qty": 1,
+   "unit": "袋",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "色拉油 2桶",
+   "name": "色拉油",
+   "qty": 2,
+   "unit": "桶",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "梅干菜 3斤",
+   "name": "梅干菜",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "草菇老抽 2桶",
+   "name": "草菇老抽",
+   "qty": 2,
+   "unit": "桶",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "桂圆沙拉酱 1包",
+   "name": "桂圆沙拉酱",
+   "qty": 1,
+   "unit": "包",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "金标生抽 1件",
+   "name": "金标生抽",
+   "qty": 1,
+   "unit": "件",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "红皮花生米 5斤",
+   "name": "红皮花生米",
+   "qty": 5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "糯米粉 5袋",
+   "name": "糯米粉",
+   "qty": 5,
+   "unit": "袋",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "干水 3斤",
+   "name": "干水",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "low"
+  },
+  {
+   "raw": "白芝麻 2斤",
+   "name": "白芝麻",
+   "qty": 2,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "豆豉 10盒",
+   "name": "豆豉",
+   "qty": 10,
+   "unit": "盒",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "黄金蛋 20个",
+   "name": "黄金蛋",
+   "qty": 20,
+   "unit": "个",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "麻鸭 3只",
+   "name": "麻鸭",
+   "qty": 3,
+   "unit": "只",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "乳鸽 5只",
+   "name": "乳鸽",
+   "qty": 5,
+   "unit": "只",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "斑鸠 1只",
+   "name": "斑鸠",
+   "qty": 1,
+   "unit": "只",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "土千张 2斤",
+   "name": "土千张",
+   "qty": 2,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "三七豆付 3斤",
+   "name": "三七豆腐",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "千张 2斤",
+   "name": "千张",
+   "qty": 2,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "老豆付 1板",
+   "name": "老豆腐",
+   "qty": 1,
+   "unit": "板",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "西瓜 1个",
+   "name": "西瓜",
+   "qty": 1,
+   "unit": "个",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "黄圣女果 2斤",
+   "name": "黄圣女果",
+   "qty": 2,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "红圣女果 2斤",
+   "name": "红圣女果",
+   "qty": 2,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "洗手套 2把",
+   "name": "手套",
+   "qty": 2,
+   "unit": "把",
+   "price": null,
+   "confidence": "medium"
+  },
+  {
+   "raw": "洗洁精 2桶",
+   "name": "洗洁精",
+   "qty": 2,
+   "unit": "桶",
+   "price": null,
+   "confidence": "high"
+  }
+ ]
+}

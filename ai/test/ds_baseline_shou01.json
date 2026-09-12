@@ -1,0 +1,605 @@
+{
+ "dsresp3.json": {
+  "items": [
+   {
+    "name": "苦瓜",
+    "qty": 4,
+    "unit": "斤"
+   },
+   {
+    "name": "花生芽",
+    "qty": 12,
+    "unit": "盒"
+   },
+   {
+    "name": "秋葵",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "薄荷叶",
+    "qty": 1,
+    "unit": "盆"
+   },
+   {
+    "name": "莴笋",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "红椒",
+    "qty": 1,
+    "unit": "斤"
+   },
+   {
+    "name": "香菜",
+    "qty": 0.5,
+    "unit": "斤"
+   },
+   {
+    "name": "蒜子",
+    "qty": 10,
+    "unit": "斤"
+   },
+   {
+    "name": "鸡毛菜",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "西红柿",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "白苋菜",
+    "qty": 10,
+    "unit": "斤"
+   },
+   {
+    "name": "杭白菜",
+    "qty": 4,
+    "unit": "斤"
+   },
+   {
+    "name": "空心菜苗",
+    "qty": 6,
+    "unit": "斤"
+   },
+   {
+    "name": "带皮马蹄",
+    "qty": 5,
+    "unit": "斤"
+   },
+   {
+    "name": "红薯梗",
+    "qty": 6,
+    "unit": "斤"
+   },
+   {
+    "name": "青柿子",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "青杭椒",
+    "qty": 3,
+    "unit": "斤"
+   },
+   {
+    "name": "螺丝椒",
+    "qty": 2,
+    "unit": "包"
+   },
+   {
+    "name": "小米椒",
+    "qty": 1,
+    "unit": "件"
+   },
+   {
+    "name": "鲜香菇",
+    "qty": 2,
+    "unit": "包"
+   },
+   {
+    "name": "花菜",
+    "qty": 2,
+    "unit": "棵"
+   },
+   {
+    "name": "白玉丝瓜",
+    "qty": 4,
+    "unit": "斤"
+   },
+   {
+    "name": "大蒜子",
+    "qty": 5,
+    "unit": "斤"
+   },
+   {
+    "name": "黄彩椒",
+    "qty": 10,
+    "unit": "斤"
+   },
+   {
+    "name": "生姜",
+    "qty": 4,
+    "unit": "斤"
+   },
+   {
+    "name": "小葱",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "鲜沙姜",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "鸡油菌",
+    "qty": 1,
+    "unit": "盒"
+   },
+   {
+    "name": "鲜百合",
+    "qty": 2.5,
+    "unit": "盒"
+   },
+   {
+    "name": "板豆腐",
+    "qty": 5,
+    "unit": "板"
+   },
+   {
+    "name": "芹菜苗",
+    "qty": 4,
+    "unit": "盒"
+   },
+   {
+    "name": "七彩萝卜苗",
+    "qty": 2,
+    "unit": "盒"
+   },
+   {
+    "name": "空心菜苗",
+    "qty": 6,
+    "unit": "盒"
+   },
+   {
+    "name": "绿线茄",
+    "qty": 2.6,
+    "unit": "斤"
+   },
+   {
+    "name": "西葫芦",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "小青菜",
+    "qty": 2,
+    "unit": "斤"
+   },
+   {
+    "name": "线椒",
+    "qty": 3,
+    "unit": "斤"
+   },
+   {
+    "name": "金耳菌",
+    "qty": 10,
+    "unit": "斤"
+   },
+   {
+    "name": "小红薯",
+    "qty": 8,
+    "unit": "斤"
+   },
+   {
+    "name": "铁山药",
+    "qty": 140,
+    "unit": "斤"
+   },
+   {
+    "name": "白手指玉米",
+    "qty": 10,
+    "unit": "斤"
+   },
+   {
+    "name": "黑手指玉米",
+    "qty": 8,
+    "unit": "斤"
+   },
+   {
+    "name": "贝贝南瓜",
+    "qty": 10,
+    "unit": "斤"
+   },
+   {
+    "name": "小麦",
+    "qty": 18,
+    "unit": "斤"
+   },
+   {
+    "name": "长豆角",
+    "qty": 14.7,
+    "unit": "斤"
+   },
+   {
+    "name": "莴笋",
+    "qty": 22.9,
+    "unit": "斤"
+   },
+   {
+    "name": "本地丝瓜",
+    "qty": 10.9,
+    "unit": "斤"
+   },
+   {
+    "name": "小青瓜",
+    "qty": 8.9,
+    "unit": "斤"
+   }
+  ]
+ },
+ "dsresp5.json": {
+  "doc_type": "handwrite",
+  "customer_hint": null,
+  "date_hint": null,
+  "items": [
+   {
+    "raw": "苦瓜 斤 4",
+    "name": "苦瓜",
+    "qty": 4,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "花生芽 盒 12",
+    "name": "花生芽",
+    "qty": 12,
+    "unit": "盒",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "秋葵 斤 2",
+    "name": "秋葵",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "薄荷叶 盆 1",
+    "name": "薄荷叶",
+    "qty": 1,
+    "unit": "盆",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "莴笋 斤 2",
+    "name": "莴笋",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "红椒 斤 1",
+    "name": "红椒",
+    "qty": 1,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "香菜 斤 0.5",
+    "name": "香菜",
+    "qty": 0.5,
+    "unit": "斤",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "蒜子 斤 10",
+    "name": "蒜子",
+    "qty": 10,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "鸡毛菜 斤 2",
+    "name": "鸡毛菜",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "西红柿 斤 2",
+    "name": "西红柿",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "白苋菜 斤 10",
+    "name": "白苋菜",
+    "qty": 10,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "杭白菜 斤 4",
+    "name": "杭白菜",
+    "qty": 4,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "空心菜苗 斤 6",
+    "name": "空心菜苗",
+    "qty": 6,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "带皮马蹄 斤 5",
+    "name": "带皮马蹄",
+    "qty": 5,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "红薯梗 斤 6",
+    "name": "红薯梗",
+    "qty": 6,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "青柿子 斤 2",
+    "name": "青柿子",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "青杭椒 3斤",
+    "name": "青杭椒",
+    "qty": 3,
+    "unit": "斤",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "螺丝椒 2包",
+    "name": "螺丝椒",
+    "qty": 2,
+    "unit": "包",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "小米椒 1件",
+    "name": "小米椒",
+    "qty": 1,
+    "unit": "件",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "鲜香菇 2包",
+    "name": "鲜香菇",
+    "qty": 2,
+    "unit": "包",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "花菜 2棵",
+    "name": "花菜",
+    "qty": 2,
+    "unit": "棵",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "白玉丝瓜 斤 4",
+    "name": "白玉丝瓜",
+    "qty": 4,
+    "unit": "斤",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "大蒜子 斤 5",
+    "name": "大蒜子",
+    "qty": 5,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "黄彩椒 斤 10",
+    "name": "黄彩椒",
+    "qty": 10,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "生姜 斤 4",
+    "name": "生姜",
+    "qty": 4,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "小葱 斤 2",
+    "name": "小葱",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "鲜沙姜 斤 2",
+    "name": "鲜沙姜",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "鸡油菌 盒 1",
+    "name": "鸡油菌",
+    "qty": 1,
+    "unit": "盒",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "鲜百合 盒 2.5",
+    "name": "鲜百合",
+    "qty": 2.5,
+    "unit": "盒",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "芹菜苗 盒 4",
+    "name": "芹菜苗",
+    "qty": 4,
+    "unit": "盒",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "七彩萝卜苗 盒 2",
+    "name": "七彩萝卜苗",
+    "qty": 2,
+    "unit": "盒",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "空心菜苗 盒 6",
+    "name": "空心菜苗",
+    "qty": 6,
+    "unit": "盒",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "小青菜 斤 2",
+    "name": "小青菜",
+    "qty": 2,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "线椒 斤 3",
+    "name": "线椒",
+    "qty": 3,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "小红薯 斤 8",
+    "name": "小红薯",
+    "qty": 8,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "铁山药 斤 10",
+    "name": "铁山药",
+    "qty": 10,
+    "unit": "斤",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "白手指玉米 斤 10",
+    "name": "白手指玉米",
+    "qty": 10,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "黑手指玉米 斤 8",
+    "name": "黑手指玉米",
+    "qty": 8,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "贝贝南瓜 斤 10",
+    "name": "贝贝南瓜",
+    "qty": 10,
+    "unit": "斤",
+    "price": null,
+    "confidence": "high"
+   },
+   {
+    "raw": "小麦 斤 1.5",
+    "name": "小麦",
+    "qty": 1.5,
+    "unit": "斤",
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "长豆角 13.7",
+    "name": "长豆角",
+    "qty": 13.7,
+    "unit": null,
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "莴笋 227",
+    "name": "莴笋",
+    "qty": 227,
+    "unit": null,
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "本地生菜 10.7",
+    "name": "本地生菜",
+    "qty": 10.7,
+    "unit": null,
+    "price": null,
+    "confidence": "medium"
+   },
+   {
+    "raw": "小青菜 8.1",
+    "name": "小青菜",
+    "qty": 8.1,
+    "unit": null,
+    "price": null,
+    "confidence": "medium"
+   }
+  ]
+ }
+}

@@ -1,0 +1,207 @@
+{
+ "doc_type": "print",
+ "customer_hint": "千寻正大广场店",
+ "date_hint": "9月1日",
+ "items": [
+  {
+   "raw": "花叶生菜 件 2",
+   "name": "花叶生菜",
+   "qty": 2,
+   "unit": "件",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "白萝卜 斤 45",
+   "name": "白萝卜",
+   "qty": 45,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "南瓜 袋 1",
+   "name": "南瓜",
+   "qty": 1,
+   "unit": "袋",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "鸡蛋 件 1",
+   "name": "鸡蛋",
+   "qty": 1,
+   "unit": "件",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "紫生菜 斤 1",
+   "name": "紫生菜",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "苦菊 斤 1",
+   "name": "苦菊",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "娃娃菜 包 5",
+   "name": "娃娃菜",
+   "qty": 5,
+   "unit": "包",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "黄彩椒 斤 2",
+   "name": "黄彩椒",
+   "qty": 2,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "青彩椒 斤 1",
+   "name": "青彩椒",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "胡萝卜 斤 6",
+   "name": "胡萝卜",
+   "qty": 6,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "生瓜 斤 18",
+   "name": "生瓜",
+   "qty": 18,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "短黄豆芽 斤 8",
+   "name": "短黄豆芽",
+   "qty": 8,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "黄瓜 斤 55",
+   "name": "黄瓜",
+   "qty": 55,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "香菇 斤 3",
+   "name": "香菇",
+   "qty": 3,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "老豆腐 斤 1",
+   "name": "老豆腐",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "平包菜 斤 5",
+   "name": "平包菜",
+   "qty": 5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "紫苏叶 盒 1",
+   "name": "紫苏叶",
+   "qty": 1,
+   "unit": "盒",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "小葱 斤 1",
+   "name": "小葱",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "荷兰芹 斤 0.5",
+   "name": "荷兰芹",
+   "qty": 0.5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "口蘑 斤 8",
+   "name": "口蘑",
+   "qty": 8,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "米糠 斤 1",
+   "name": "米糠",
+   "qty": 1,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "毛白菜 斤 6",
+   "name": "毛白菜",
+   "qty": 6,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "绿豆饼 5斤",
+   "name": "绿豆饼",
+   "qty": 5,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "青椒 8斤",
+   "name": "青椒",
+   "qty": 8,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  },
+  {
+   "raw": "面粉 10斤",
+   "name": "面粉",
+   "qty": 10,
+   "unit": "斤",
+   "price": null,
+   "confidence": "high"
+  }
+ ]
+}

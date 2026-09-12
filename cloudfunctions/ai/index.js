@@ -1,11 +1,16 @@
 // FreshFlow · 云函数 ai：LLM 智能录单解析（文本/图片/语音 → 结构化订单行 JSON）
-// 供应商可配置（OpenAI 兼容协议），环境变量：
-//   LLM_API_KEY（必配）      密钥（DeepSeek：api.deepseek.com 申请；GLM：bigmodel.cn）
-//   LLM_ENDPOINT（可选）     含 deepseek 字样走 DeepSeek，否则默认智谱
+// 双通道架构（供应商可按通道配置，均为 OpenAI 兼容协议）：
+//   图片通道 → 智谱 glm-4.5v（2026-09-12 A/B 实测：潦草手写四行数字全对且 low 标记真实执行，
+//              显著优于 deepseek-flash 的臆造小数不标记；样张与结论见 ai/test/识别率实测报告.md）
+//   文本/语音通道 → 按 LLM_ENDPOINT 决定供应商（当前 DeepSeek）
+// 环境变量：
+//   GLM_API_KEY（图片通道必配）  智谱密钥（bigmodel.cn 申请）
+//   LLM_API_KEY（文本/语音必配） DeepSeek 密钥（api.deepseek.com 申请）
+//   LLM_ENDPOINT（可选）     含 deepseek 字样走 DeepSeek，否则默认智谱（仅影响文本/语音）
 //   LLM_MODEL_TEXT（可选）   默认 glm-4.5；DeepSeek 填 deepseek-flash
-//   LLM_MODEL_IMAGE（可选）  默认 glm-4.5v；DeepSeek 填 deepseek-flash（V4.1-Flash 原生视觉，含 OCR）
+//   LLM_MODEL_IMAGE（可选）  默认 glm-4.5v（图片通道恒走智谱，此变量可换其它智谱视觉模型）
 //   TENCENT_SECRET_ID/KEY    腾讯云子账号密钥（仅 ASR 语音识别权限），语音转文字用
-// 兼容旧变量名 GLM_API_KEY。安全：只返回解析结果，绝不回显 event/env/headers；
+// 安全：只返回解析结果，绝不回显 event/env/headers；
 // 所有出站请求目标均为字面量官方域名（构造上杜绝 SSRF）。
 const LLM_URL_ZHIPU = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
 const LLM_URL_DEEPSEEK = 'https://api.deepseek.com/chat/completions'
@@ -121,10 +126,13 @@ exports.main = async (event) => {
     try { src = JSON.parse(src.body) } catch (e) { /* 保持原样 */ }
   }
 
-  const key = process.env.LLM_API_KEY || process.env.GLM_API_KEY
-  if (!key || key === 'PENDING') return { ok: false, error: 'LLM_API_KEY 未配置（请在云函数环境变量中填入 DeepSeek/智谱密钥）' }
   const mode = src && src.mode === 'image' ? 'image' : src && src.mode === 'audio' ? 'audio' : 'text'
-  const provider = llmProvider()
+  // 图片恒走智谱视觉通道；文本/语音按 LLM_ENDPOINT 选供应商
+  const provider = mode === 'image' ? 'zhipu' : llmProvider()
+  const key = (provider === 'deepseek' ? process.env.LLM_API_KEY : process.env.GLM_API_KEY) || ''
+  if (!key || key === 'PENDING') {
+    return { ok: false, error: (provider === 'deepseek' ? 'LLM_API_KEY(DeepSeek)' : 'GLM_API_KEY(智谱)') + ' 未配置' }
+  }
   const model = mode === 'image'
     ? (process.env.LLM_MODEL_IMAGE || 'glm-4.5v')
     : (process.env.LLM_MODEL_TEXT || 'glm-4.5')
