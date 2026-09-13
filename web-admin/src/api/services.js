@@ -96,6 +96,16 @@ async function categoryIdByName(name, tid) {
   return (Array.isArray(back) ? back[0] : back)?.id ?? null
 }
 
+/** 商品编码留空自动生成：取当前租户最大编码 +1（定长 10 位数字，文本序=数值序） */
+async function nextGoodsCode(tid) {
+  const rows = unwrap(await db.from('goods').select('code').eq('tenant_id', tid).order('code', { ascending: false }).limit(1)) || []
+  const maxCode = (Array.isArray(rows) ? rows[0] : rows)?.code
+  if (!maxCode) return '0110010001'
+  const n = Number(maxCode)
+  if (Number.isNaN(n)) return String(Date.now()).slice(-10)
+  return String(n + 1).padStart(10, '0')
+}
+
 export const goodsApi = {
   async list({ keyword = '', category = '', status = '' } = {}) {
     const rows = unwrap(await db.from('goods').select('*').order('created_at', { ascending: false })) || []
@@ -123,7 +133,7 @@ export const goodsApi = {
     const categoryId = await categoryIdByName(item.category, tid)
     const payload = {
       tenant_id: tid,
-      code: item.code || null,
+      code: String(item.code || '').trim() || await nextGoodsCode(tid),
       name: item.name,
       alias: item.alias || [],
       category_id: categoryId,

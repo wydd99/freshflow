@@ -132,10 +132,14 @@ function openEdit(row) {
 
 async function doSave() {
   if (!dlg.form.name) return ElMessage.warning('品名必填')
-  await goodsApi.save({ ...dlg.form })
-  ElMessage.success('已保存')
-  dlg.visible = false
-  fetchList()
+  try {
+    await goodsApi.save({ ...dlg.form })
+    ElMessage.success('已保存')
+    dlg.visible = false
+    fetchList()
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  }
 }
 
 async function doRemove(row) {
