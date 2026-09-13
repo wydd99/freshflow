@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鲜配订货 · 使用说明（速览版）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif; color: #2c3e50; line-height: 1.75; background: #f6f8f7; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 20px 60px; }
+  .cover { background: linear-gradient(135deg, #1f9d55, #157a40); color: #fff; text-align: center; padding: 52px 20px 40px; border-radius: 0 0 24px 24px; }
+  .cover h1 { font-size: 34px; letter-spacing: 6px; }
+  .cover p { opacity: .92; margin-top: 10px; font-size: 15px; }
+  .ver { display: inline-block; margin-top: 16px; background: rgba(255,255,255,.18); padding: 4px 16px; border-radius: 14px; font-size: 13px; }
+  section { background: #fff; border-radius: 14px; padding: 26px 32px; margin: 22px 0; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+  h2 { font-size: 20px; color: #157a40; border-left: 5px solid #1f9d55; padding-left: 12px; margin-bottom: 14px; }
+  p, li { font-size: 14.5px; }
+  ul { padding-left: 22px; margin: 6px 0; }
+  li { margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13.5px; }
+  th, td { border: 1px solid #e5e7eb; padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: #f0fdf4; color: #157a40; white-space: nowrap; }
+  .steps { display: flex; gap: 14px; flex-wrap: wrap; margin: 14px 0 4px; }
+  .step { flex: 1; min-width: 220px; background: #f8faf9; border: 1px solid #e3efe7; border-radius: 12px; padding: 16px 18px; }
+  .step b { display: inline-block; background: #1f9d55; color: #fff; width: 26px; height: 26px; border-radius: 50%; text-align: center; line-height: 26px; margin-right: 8px; font-size: 14px; }
+  .step h3 { font-size: 15px; margin: 6px 0 4px; }
+  .step p { font-size: 13.5px; color: #566; margin: 0; }
+  .cols { display: flex; gap: 14px; flex-wrap: wrap; }
+  .col { flex: 1; min-width: 280px; }
+  .col h3 { font-size: 15px; color: #157a40; margin-bottom: 6px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; margin-right: 6px; }
+  .badge.a { background: #e8f7ee; color: #157a40; }
+  .badge.b { background: #eef4ff; color: #3b6fd4; }
+  .tip { background: #f0fdf4; border-left: 4px solid #1f9d55; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13.5px; }
+  footer { text-align: center; color: #9aa5a0; font-size: 12.5px; padding: 20px 0 40px; }
+  @media print {
+    body { background: #fff; }
+    .cover { border-radius: 0; }
+    section { box-shadow: none; border: 1px solid #eee; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>鲜配订货</h1>
+  <p>蔬菜批发配送 · 在线订货经营系统 · 使用说明（速览版）</p>
+  <span class="ver">V1.0 · 2026 年 9 月</span>
+</div>
+
+<div class="wrap">
+
+<section>
+  <h2>这是什么</h2>
+  <p>「鲜配订货」是给蔬菜批发配送生意用的在线经营系统，把每天最费人工的几件事搬到线上：</p>
+  <ul>
+    <li><b>客户手机下单</b> —— 饭店 / 食堂 / 酒店在小程序上看当日价格直接订货，也能拍照、发文字、<b>按住说话</b>报单；</li>
+    <li><b>商家电脑接单</b> —— 客户报单自动识别成订单，不用再手抄转录；</li>
+    <li><b>分拣打印</b> —— 按订单逐件称重分拣，配货单 / 出库单 / 小票一键打印；</li>
+    <li><b>收款对账</b> —— 欠款自动记账，月度对账单一键生成。</li>
+  </ul>
+  <div class="tip">💡 一句话：客户少打电话、商家少抄单，价格、欠款、对账系统自动算清。</div>
+</section>
+
+<section>
+  <h2>谁用哪一端</h2>
+  <table>
+    <tr><th style="width:34%">角色</th><th>用什么设备</th><th>干什么</th></tr>
+    <tr>
+      <td><span class="badge b">订货客户</span>饭店 / 食堂 / 酒店采购</td>
+      <td>手机微信（小程序「鲜配订货」），或手机浏览器订货页</td>
+      <td>看价格、下单、再来一单、查订单、看月度对账单</td>
+    </tr>
+    <tr>
+      <td><span class="badge a">商家老板 / 员工</span>配送站</td>
+      <td>电脑浏览器（管理端网址由配送站提供）</td>
+      <td>录单、分拣、打印、发货、收款、管商品客户报价</td>
+    </tr>
+  </table>
+  <p style="font-size:13px;color:#8a9590">两端无需安装 App；手机端打开即用，电脑端打开网址即可。</p>
+</section>
+
+<section>
+  <h2>三步上手</h2>
+  <div class="steps">
+    <div class="step"><b>1</b><h3>拿账号</h3><p>联系配送站业务员开通。账号密码单独发给你，首次登录后建议修改。</p></div>
+    <div class="step"><b>2</b><h3>登录</h3><p>客户：微信打开小程序输账号密码；商家：电脑打开管理端网址登录。</p></div>
+    <div class="step"><b>3</b><h3>开始用</h3><p>客户直接选货下单；商家从首页经营日报开始一天的作业。</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>功能速览</h2>
+  <div class="cols">
+    <div class="col">
+      <h3><span class="badge b">客户端</span></h3>
+      <ul>
+        <li>按分类浏览，价格已按贵司等级自动显示</li>
+        <li>数量直接输入，支持半斤等小数</li>
+        <li>🎤 按住说话报单，自动变成订货清单</li>
+        <li>「按此单再来一单」日常补货十秒完成</li>
+        <li>查订单进度、导出明细、月度对账单</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3><span class="badge a">商家后台</span></h3>
+      <ul>
+        <li>经营日报：今日订单 / 销售额 / 欠款一屏看清</li>
+        <li>智能录单：文字粘贴、拍照识别自动成单</li>
+        <li>订单池：确认、账期自动拦截欠款客户</li>
+        <li>分拣屏：称重分拣自动跳件，缺货可登记</li>
+        <li>打印中心：配货单 / 出库单 / 小票三件套</li>
+        <li>报价、商品、客户、采购、库存、对账</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>账号与密码</h2>
+  <ul>
+    <li>账号由配送站统一开通，<b>不支持自助注册</b>——每个客户单独建档定价，保证一客一价不外泄。</li>
+    <li>密码要求含大写字母、小写字母、数字（如 <i>Abc12345</i> 这种格式，具体密码以业务员发放为准）。</li>
+    <li>登录后可在「设置」/「我的订单」里自行修改密码；<b>忘记密码联系业务员重置</b>，1 分钟解决。</li>
+    <li>每个客户只能看到自己公司的订单和价格，数据互相隔离。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>常见问题速答</h2>
+  <table>
+    <tr><th style="width:40%">问题</th><th>答案</th></tr>
+    <tr><td>忘记密码</td><td>联系配送站业务员重置</td></tr>
+    <tr><td>扫码提示"没有体验权限"</td><td>你的微信还没被加入体验名单，联系业务员添加后重新扫码</td></tr>
+    <tr><td>客户下单了商家没看到</td><td>刷新订单页；仍没有则确认客户登录的是自己的账号</td></tr>
+    <tr><td>报单识别不准</td><td>识别结果需人工扫一眼再保存；越常用的错别字录进"别名"后越准</td></tr>
+    <tr><td>显示"订单被拦截"</td><td>欠款超上限或超期未结——结清后自动恢复，急单联系配送站管理员</td></tr>
+  </table>
+  <p style="margin-top:10px">更多分步骤图文操作，见配套的 <b>《鲜配订货 · 使用教程》</b>。</p>
+</section>
+
+<footer>
+  鲜配订货 · 使用说明（速览版）<br>
+  账号开通 / 密码重置 / 功能问题，请联系配送站业务员（电话 / 微信：____________）
+</footer>
+
+</div>
+</body>
+</html>
