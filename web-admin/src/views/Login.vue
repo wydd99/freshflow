@@ -1,6 +1,12 @@
 <template>
   <div class="login-wrap">
     <el-card class="login-card">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none">
+          <path d="M12 3c3.5 2.2 5.5 5.4 5.5 8.6 0 3.4-2.4 5.9-5.5 5.9s-5.5-2.5-5.5-5.9C6.5 8.4 8.5 5.2 12 3z" fill="#1a6b45"/>
+          <path d="M4 20c2.2-3.2 5-4.8 8-4.8s5.8 1.6 8 4.8" stroke="#2e9e63" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="title">鲜配后台</div>
       <el-form :model="form" @keyup.enter="submit">
         <el-form-item>
@@ -56,9 +62,4 @@ function showErr(msg) {
 }
 </script>
 
-<style scoped>
-.login-wrap { height: 100%; display: flex; align-items: center; justify-content: center; background: #1f2d3d; }
-.login-card { width: 360px; }
-.title { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 20px; letter-spacing: 4px; }
-.tip { margin-top: 12px; font-size: 12px; color: #999; text-align: center; }
-</style>
+<style scoped>.login-wrap {  height: 100%;  display: flex;  align-items: center;  justify-content: center;  background:    radial-gradient(1000px 500px at 85% -10%, rgba(46, 158, 99, 0.18), transparent 60%),    radial-gradient(800px 420px at -10% 110%, rgba(26, 107, 69, 0.22), transparent 55%),    linear-gradient(160deg, #0f2a1c 0%, #123322 55%, #173d29 100%);}.login-card { width: 380px; border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(4, 20, 12, 0.45); padding: 6px 6px 2px; }.brand-mark { text-align: center; margin-bottom: 4px; }.title { text-align: center; font-size: 22px; font-weight: 700; margin: 4px 0 22px; letter-spacing: 6px; color: #173d29; }.tip { margin-top: 14px; font-size: 12px; color: #9aa8a0; text-align: center; line-height: 1.6; }</style>
