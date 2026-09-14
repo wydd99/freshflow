@@ -2,7 +2,7 @@
   <el-container class="layout">
     <el-aside width="200px" class="aside">
       <div class="logo">{{ brandShort }}后台</div>
-      <el-menu :default-active="route.path" router background-color="#123322" text-color="#a7c4b2" active-text-color="#7fd6a4">
+      <el-menu :default-active="route.path" router background-color="#1f2d3d" text-color="#bfcbd9" active-text-color="#409EFF">
         <el-menu-item v-for="item in menus" :key="item.path" :index="item.path">
           <el-icon><component :is="item.icon" /></el-icon>
           <span>{{ item.title }}</span>
@@ -79,8 +79,8 @@ function logout() {
 
 <style scoped>
 .layout { height: 100%; }
-.aside { background: #123322; box-shadow: inset -1px 0 0 rgba(255,255,255,0.04); }
-.logo { color: #eaf6ee; font-size: 18px; font-weight: 700; text-align: center; padding: 18px 0; letter-spacing: 2px; }
+.aside { background: #1f2d3d; }
+.logo { color: #fff; font-size: 18px; font-weight: 700; text-align: center; padding: 18px 0; letter-spacing: 2px; }
 .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e6e6e6; }
 .crumb { font-size: 16px; font-weight: 600; }
 .user { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
