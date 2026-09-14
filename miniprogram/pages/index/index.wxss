@@ -55,3 +55,17 @@
 .cpanel-btns { display: flex; gap: 20rpx; margin-top: 24rpx; }
 .cbtn { flex: 1; font-size: 30rpx; background: #f1f3f2; color: #444; border-radius: 44rpx; }
 .cbtn.primary { background: #1f9d55; color: #fff; }
+
+/* 登录安全门禁 */
+.gate-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 50; display: flex; align-items: center; justify-content: center; }
+.gate-card { width: 600rpx; background: #fff; border-radius: 20rpx; padding: 40rpx 36rpx; }
+.gate-title { font-size: 34rpx; font-weight: 700; margin-bottom: 20rpx; }
+.gate-msg { font-size: 27rpx; color: #555; line-height: 1.6; margin-bottom: 12rpx; }
+.gate-phone { font-size: 24rpx; color: #999; margin-bottom: 16rpx; }
+.gate-row { display: flex; align-items: center; gap: 16rpx; margin-top: 10rpx; }
+.gate-input { flex: 1; border: 1rpx solid #e0e0e0; border-radius: 12rpx; padding: 18rpx 20rpx; font-size: 28rpx; }
+.gate-send { background: #1f9d55; color: #fff; font-size: 26rpx; padding: 18rpx 24rpx; border-radius: 12rpx; }
+.gate-send.off { background: #c8c8c8; }
+.gate-btns { display: flex; gap: 20rpx; margin-top: 32rpx; }
+.gate-btn { flex: 1; text-align: center; font-size: 30rpx; padding: 20rpx 0; border-radius: 44rpx; background: #f1f3f2; color: #444; }
+.gate-btn.primary { background: #1f9d55; color: #fff; }

@@ -20,6 +20,12 @@ Page({
     deliveryDate: '',
     recording: false,
     submitting: false,
+    gateVisible: false,
+    gateMode: 'verify',
+    gateMsg: '',
+    gatePhone: '',
+    gateCode: '',
+    gateCd: 0,
     result: { visible: false, ok: false, orderNo: '', msg: '', countdown: 5 },
   },
 
@@ -100,6 +106,7 @@ Page({
       this.recalc()
       this.saveCart()
       if (dropped) wx.showToast({ title: dropped + ' 个下架商品已移除', icon: 'none' })
+      this.gateCheck() // 登录安全门禁：新设备验证（记录模式云端不拦截）
     } catch (e) {
       if (e.statusCode === 401) { api.logout(); wx.reLaunch({ url: '/pages/login/login' }); return }
       wx.showToast({ title: '加载失败', icon: 'none' })
@@ -173,6 +180,58 @@ Page({
     this.setData({ cartPanel: true })
   },
   closeCart() { this.setData({ cartPanel: false }) },
+
+  /* ---------- 登录安全门禁（新设备手机验证） ---------- */
+  gateDevice() {
+    let d = wx.getStorageSync('ff_device')
+    if (!d) { d = 'mp-' + Math.random().toString(36).slice(2) + Date.now().toString(36); wx.setStorageSync('ff_device', d) }
+    return d
+  },
+  gateCall(action, extra) {
+    const that = this
+    return new Promise((resolve) => {
+      wx.request({
+        url: 'https://freshflow-ENV_ID.service.tcloudbase.com/authgate',
+        method: 'POST',
+        data: Object.assign({ action, access_token: api.token(), device_id: this.gateDevice() }, extra || {}),
+        header: { 'Content-Type': 'application/json' },
+        success: (r) => resolve(r.data || {}),
+        fail: () => resolve({ ok: false, error: '网络异常' }),
+      })
+    })
+  },
+  async gateCheck() {
+    try {
+      const res = await this.gateCall('check')
+      if (!res || res.ok === false || res.trusted) return
+      if (res.reason === 'no_phone') {
+        this.setData({ gateVisible: true, gateMode: 'no_phone', gateMsg: res.message || '该账号还未登记手机号，请联系配送站绑定后再登录', gatePhone: '' })
+      } else {
+        this.setData({ gateVisible: true, gateMode: 'verify', gateMsg: '', gatePhone: res.phone_mask || '' })
+      }
+    } catch (e) { /* 网络异常不拦截 */ }
+  },
+  onGateCodeInput(e) { this.setData({ gateCode: e.detail.value }) },
+  async gateSend() {
+    if (this.data.gateCd > 0) return
+    const res = await this.gateCall('send_code')
+    if (res.ok) {
+      wx.showToast({ title: '验证码已发送', icon: 'none' })
+      this.setData({ gateCd: 60 })
+      const t = setInterval(() => {
+        const n = this.data.gateCd - 1
+        this.setData({ gateCd: n })
+        if (n <= 0) clearInterval(t)
+      }, 1000)
+    } else wx.showToast({ title: String(res.error || '发送失败').slice(0, 26), icon: 'none' })
+  },
+  async gateVerify() {
+    if (!this.data.gateCode) { wx.showToast({ title: '请输入验证码', icon: 'none' }); return }
+    const res = await this.gateCall('verify', { code: String(this.data.gateCode) })
+    if (res.ok && res.trusted) { this.setData({ gateVisible: false }); wx.showToast({ title: '验证通过', icon: 'success' }) }
+    else wx.showToast({ title: String(res.error || '验证失败').slice(0, 26), icon: 'none' })
+  },
+  gateLogout() { api.logout(); wx.reLaunch({ url: '/pages/login/login' }) },
   noop() {},
   onRemove(e) {
     const id = e.currentTarget.dataset.id

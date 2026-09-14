@@ -84,6 +84,9 @@
   .modal-addr { margin: 8px 0 2px; }
   .modal-addr select { width: 100%; padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; background: #fafafa; color: #333; }
   .maddr-hint { font-size: 12px; color: #999; margin-bottom: 4px; }
+  /* 登录安全门禁（新设备验证） */
+  #gatemask { z-index: 40; }
+  #gatemask .modal p { margin-bottom: 6px; }
   /* 购物车面板（持久化购物车） */
   .cart-sum { cursor: pointer; }
   .crow { padding: 10px 0; border-bottom: 1px solid #f2f2f2; }
@@ -178,6 +181,22 @@
       <div class="mbtns">
         <button class="mcancel" onclick="clearCart()">清空</button>
         <button class="mok" onclick="cartGoOrder()">去下单</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gatemask" class="modal-mask hide">
+    <div class="modal">
+      <h3>安全验证</h3>
+      <p id="gate-msg" class="mline" style="margin-top:8px"></p>
+      <p id="gate-phone" class="mline" style="color:#999;font-size:12px"></p>
+      <div id="gate-row" style="display:flex;gap:8px;margin-top:12px">
+        <input id="gate-code" inputmode="numeric" placeholder="短信验证码" style="flex:1;padding:9px 12px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px">
+        <button id="gate-send" onclick="gateSend()" style="padding:9px 14px;border:none;border-radius:10px;background:#1f9d55;color:#fff;font-size:13px">发送验证码</button>
+      </div>
+      <div class="mbtns">
+        <button class="mcancel" onclick="gateLogout()">退出登录</button>
+        <button class="mok" id="gate-submit" onclick="gateVerify()">验证</button>
       </div>
     </div>
   </div>
@@ -410,6 +429,7 @@ async function enterMain() {
   saveCart()
   renderCats(); renderGoods()
   if (droppedCart) ElMessageTransient(droppedCart + ' 个已下架商品已从购物车移除')
+  gateCheck() // 登录安全门禁：新设备验证（记录模式下云端不拦截）
 }
 
 function renderCats() {
@@ -501,6 +521,76 @@ function setQty(id, v, skipRender) {
   }
   saveCart()
   refreshCartBar()
+}
+
+/* ---------- 登录安全门禁（新设备手机验证；记录模式云端不拦截） ---------- */
+const GATE_URL = 'https://freshflow-ENV_ID.service.tcloudbase.com/authgate'
+let gateTimer = null
+async function authgateCall(action, extra) {
+  const r = await fetch(GATE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ action, access_token: token(), device_id: device() }, extra || {})),
+  })
+  return r.json()
+}
+async function gateCheck() {
+  try {
+    const res = await authgateCall('check')
+    if (!res || res.ok === false) return
+    if (res.trusted) return
+    openGate(res)
+  } catch (e) { /* 网络异常不拦截 */ }
+}
+function openGate(res) {
+  const msg = document.getElementById('gate-msg')
+  if (res.reason === 'no_phone') {
+    msg.textContent = res.message || '此设备首次登录需要短信验证；该账号还未登记手机号，请联系配送站绑定后再登录'
+    document.getElementById('gate-row').style.display = 'none'
+    document.getElementById('gate-submit').style.display = 'none'
+  } else {
+    msg.textContent = '此设备首次登录，为保障账号安全，请完成短信验证（验证一次后本设备免验证）'
+    document.getElementById('gate-phone').textContent = res.phone_mask ? ('验证码将发送至：' + res.phone_mask) : ''
+    document.getElementById('gate-row').style.display = ''
+    document.getElementById('gate-submit').style.display = ''
+  }
+  document.getElementById('gatemask').classList.remove('hide')
+}
+async function gateSend() {
+  const btn = document.getElementById('gate-send')
+  if (btn.disabled) return
+  try {
+    const res = await authgateCall('send_code')
+    if (res.ok) {
+      ElMessageTransient('验证码已发送')
+      let s = 60
+      btn.disabled = true
+      btn.textContent = s + ' 秒后重发'
+      if (gateTimer) clearInterval(gateTimer)
+      gateTimer = setInterval(() => {
+        s -= 1
+        if (s <= 0) { clearInterval(gateTimer); btn.disabled = false; btn.textContent = '发送验证码' }
+        else btn.textContent = s + ' 秒后重发'
+      }, 1000)
+    } else { alert(res.error || '发送失败') }
+  } catch (e) { alert('网络异常，请重试') }
+}
+async function gateVerify() {
+  const code = String(document.getElementById('gate-code').value || '').trim()
+  if (!code) return alert('请输入验证码')
+  const btn = document.getElementById('gate-submit')
+  btn.disabled = true
+  try {
+    const res = await authgateCall('verify', { code })
+    if (res.ok && res.trusted) {
+      document.getElementById('gatemask').classList.add('hide')
+      ElMessageTransient('验证通过，本设备后续登录免验证')
+    } else { alert(res.error || '验证失败') }
+  } catch (e) { alert('网络异常，请重试') } finally { btn.disabled = false }
+}
+function gateLogout() {
+  if (gateTimer) clearInterval(gateTimer)
+  doLogout()
 }
 
 /* ---------- 购物车面板（查看/改量/删行/清空） ---------- */

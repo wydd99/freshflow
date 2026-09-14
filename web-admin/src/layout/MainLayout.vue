@@ -24,12 +24,14 @@
       <el-main><router-view /></el-main>
     </el-container>
   </el-container>
+  <GateDialog />
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import GateDialog from '@/components/GateDialog.vue'
 
 const route = useRoute()
 const router = useRouter()

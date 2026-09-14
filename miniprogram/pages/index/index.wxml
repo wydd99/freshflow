@@ -72,6 +72,25 @@
     </view>
   </view>
 
+  <view class="gate-mask" wx:if="{{gateVisible}}">
+    <view class="gate-card">
+      <view class="gate-title">安全验证</view>
+      <view class="gate-msg" wx:if="{{gateMode === 'no_phone'}}">{{gateMsg}}</view>
+      <block wx:else>
+        <view class="gate-msg">此设备首次登录，为保障账号安全，请完成短信验证（验证一次后本设备免验证）</view>
+        <view class="gate-phone" wx:if="{{gatePhone}}">验证码将发送至：{{gatePhone}}</view>
+        <view class="gate-row">
+          <input class="gate-input" type="number" maxlength="8" placeholder="短信验证码" value="{{gateCode}}" bindinput="onGateCodeInput" />
+          <view class="gate-send {{gateCd > 0 ? 'off' : ''}}" bindtap="gateSend">{{gateCd > 0 ? gateCd + 's' : '发送验证码'}}</view>
+        </view>
+      </block>
+      <view class="gate-btns">
+        <view class="gate-btn" bindtap="gateLogout">退出登录</view>
+        <view class="gate-btn primary" wx:if="{{gateMode !== 'no_phone'}}" bindtap="gateVerify">验证</view>
+      </view>
+    </view>
+  </view>
+
   <view class="cartbar">
     <view class="sum" bindtap="openCart">合计 <text class="money">¥{{total}}</text>（{{count}} 件）<text style="color:#1f9d55;font-size:22rpx"> · 查看 ▸</text></view>
     <view class="submit {{count ? '' : 'off'}}" bindtap="onSubmit">去下单</view>
