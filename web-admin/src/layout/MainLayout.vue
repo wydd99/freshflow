@@ -69,7 +69,9 @@ const menus = computed(() => [
   { path: '/oplog', title: '操作日志', icon: 'Document' },
   { path: '/platform', title: '平台管理', icon: 'Monitor' },
   { path: '/settings', title: '设置', icon: 'Setting' },
-].filter((m) => !(HIDE_MODULES_FOR.includes(store.actor?.username) && HIDDEN_MODULES.includes(m.key))))
+].filter((m) => !(HIDE_MODULES_FOR.includes(store.actor?.username) && HIDDEN_MODULES.includes(m.key)))
+  // 权限真空守卫：登出后/身份未加载时菜单全空，防止过滤条件失效导致全量菜单闪现
+  .filter(() => store.actor?.kind === 'admin'))
 
 function logout() {
   store.logout()

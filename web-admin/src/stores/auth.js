@@ -65,7 +65,9 @@ export const useAuthStore = defineStore('auth', {
       try { await auth.signOut?.() } catch (e) { /* 忽略登出异常 */ }
       this.session = null
       this.actor = null
-      this.checked = false
+      // checked 置 true 短路 restore()：登出后 js-sdk getSession() 仍可能返回内存缓存会话，
+      // 守卫若重新发现它会误判"已登录"把人弹回首页（退出停留 bug 实证）。下次冷启动内存态自然重置。
+      this.checked = true
     },
   },
 })

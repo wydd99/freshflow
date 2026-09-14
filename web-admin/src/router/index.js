@@ -40,7 +40,9 @@ router.beforeEach(async (to) => {
   // 真实登录需走已发布的静态托管域名）
   const store = useAuthStore()
   await store.restore()
-  if (to.name === 'login') return store.isLoggedIn ? { path: '/' } : true
+  // 去 /login 永远放行：登出瞬间 getSession() 可能仍返回缓存会话，
+  // 此处若弹回首页会造成"退出后停留"（已实证）
+  if (to.name === 'login') return true
   return store.isLoggedIn ? true : { path: '/login' }
 })
 
