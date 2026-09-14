@@ -2,7 +2,7 @@
   <el-container class="layout">
     <el-aside width="200px" class="aside">
       <div class="logo">{{ brandShort }}后台</div>
-      <el-menu :default-active="route.path" router class="side-menu" :default-openeds="[]">
+      <el-menu :default-active="route.path" router background-color="#1f2d3d" text-color="#bfcbd9" active-text-color="#409EFF">
         <el-menu-item v-for="item in menus" :key="item.path" :index="item.path">
           <el-icon><component :is="item.icon" /></el-icon>
           <span>{{ item.title }}</span>
@@ -12,26 +12,14 @@
     <el-container>
       <el-header class="header">
         <span class="crumb">{{ route.meta.title }}</span>
-        <div style="display:flex; align-items:center; gap:14px">
-          <el-dropdown trigger="click" @command="setTheme">
-            <span class="user" style="gap:2px"><el-icon><Brush /></el-icon> {{ themeName }} <el-icon><ArrowDown /></el-icon></span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item v-for="th in THEMES" :key="th.key" :command="th.key" :disabled="th.key === theme">
-                  {{ th.label }}{{ th.key === theme ? ' ✓' : '' }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-dropdown>
-            <span class="user">管理员 <el-icon><ArrowDown /></el-icon></span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
+        <el-dropdown>
+          <span class="user">管理员 <el-icon><ArrowDown /></el-icon></span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </el-header>
       <el-main><router-view /></el-main>
     </el-container>
@@ -50,29 +38,9 @@ const route = useRoute()
 const router = useRouter()
 const store = useAuthStore()
 
-// 界面主题（三套可切换，localStorage 记忆）
-const THEMES = [
-  { key: 'natural', label: '清新自然' },
-  { key: 'pro', label: '现代专业' },
-  { key: 'warm', label: '暖食市集' },
-]
-const theme = ref(localStorage.getItem('ff_theme_admin') || 'natural')
-const themeName = computed(() => (THEMES.find((x) => x.key === theme.value) || THEMES[0]).label)
-function setTheme(key) {
-  theme.value = key
-  localStorage.setItem('ff_theme_admin', key)
-  document.documentElement.dataset.theme = key
-}
-function applyTheme() {
-  const saved = localStorage.getItem('ff_theme_admin') || 'natural'
-  theme.value = saved
-  document.documentElement.dataset.theme = ['natural', 'pro', 'warm'].includes(saved) ? saved : 'natural'
-}
-
 // 品牌（T3.4）：logo 读租户品牌简称
 const brandShort = ref('鲜配')
 onMounted(async () => {
-  applyTheme()
   try {
     const res = await db.from('tenant').select('brand').limit(1)
     const rows = (res?.data ?? res) || []
@@ -113,13 +81,10 @@ function logout() {
 
 <style scoped>
 .layout { height: 100%; }
-.aside { background: var(--ff-sidebar-bg); box-shadow: inset -1px 0 0 var(--ff-sidebar-border); }
+.aside { background: #1f2d3d; }
 .logo { color: #fff; font-size: 18px; font-weight: 700; text-align: center; padding: 18px 0; letter-spacing: 2px; }
-.header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ff-header-line); background: #fff; }
+.header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e6e6e6; }
 .crumb { font-size: 16px; font-weight: 600; }
-.user { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; color: var(--ff-primary); font-size: 13.5px; }
-.el-menu { border-right: none; background: transparent; }
-.side-menu :deep(.el-menu-item) { color: var(--ff-sidebar-text); }
-.side-menu :deep(.el-menu-item.is-active) { color: var(--ff-sidebar-active); background: var(--ff-sidebar-active-bg); border-right: 3px solid var(--ff-primary); }
-.side-menu :deep(.el-menu-item:hover) { background: var(--ff-sidebar-active-bg); }
+.user { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.el-menu { border-right: none; }
 </style>
