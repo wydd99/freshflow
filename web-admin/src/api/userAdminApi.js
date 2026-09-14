@@ -30,6 +30,10 @@ export const userAdminApi = {
   setStatus(uid, blocked) {
     return callUseradmin('setStatus', { uid, blocked })
   },
+  /** 登记/修改子账号手机号（店家新设备验证用） */
+  setPhone(uid, phone) {
+    return callUseradmin('setPhone', { uid, phone })
+  },
   /** 解绑（删 customer_user 映射行，Auth 用户保留） */
   unbind(uid) {
     return callUseradmin('unbind', { uid })

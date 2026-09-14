@@ -232,6 +232,18 @@ exports.main = async (event) => {
         return { ok: true, uid, blocked }
       }
 
+      // 登记/修改子账号手机号（店家新设备验证用；商家端自助操作）
+      case 'setPhone': {
+        const uid = String(payload.uid || '')
+        const phone = String(payload.phone || '').trim()
+        if (!uid) throw new Error('缺少用户 uid')
+        if (phone && !/^1\d{10}$/.test(phone)) throw new Error('手机号格式不正确（11 位）')
+        const own = await pgList('customer_user', 'select=id,username&uid=eq.' + uid, accessToken, deviceId)
+        if (!Array.isArray(own) || !own.length) throw new Error('该账号不属于本租户，无法操作')
+        await pgPatch('customer_user', 'uid=eq.' + uid, { phone: phone || null }, accessToken, deviceId)
+        return { ok: true, uid, phone: phone || null }
+      }
+
       // 解绑：删 customer_user 映射行（保留 Auth 用户，防误删可恢复）
       case 'unbind': {
         const uid = String(payload.uid || '')

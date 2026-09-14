@@ -121,6 +121,10 @@ async function doCheck(actor, deviceId, ip) {
     await ensureDevice(actor, deviceId, ip)
     await audit(actor, deviceId, ip, 'new_device', { enforce })
   }
+  // 产品决定（2026-09-14）：手机验证只针对顾客端；商家端（后台管理员）保留审计记录但不拦截
+  if (actor.kind === 'admin') {
+    return { ok: true, trusted: true, note: 'admin_bypass' }
+  }
   const hasPhone = !!normalizeCnPhone(actor.phone)
   if (!enforce) {
     // 记录模式：不拦截，仅返回画像（前端无需弹验证）

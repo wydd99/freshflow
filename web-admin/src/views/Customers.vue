@@ -142,8 +142,15 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="手机号" width="120" align="center">
+          <template #default="{ row }">
+            <span v-if="row.phone">{{ maskPhone(row.phone) }}</span>
+            <el-tag v-else size="small" type="warning">未登记</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="240" align="center">
           <template #default="{ row }">
+            <el-button link type="primary" size="small" @click="openSetPhone(row)">手机号</el-button>
             <el-button link type="primary" size="small" @click="openResetPwd(row)">重置密码</el-button>
             <el-button link size="small" :type="row.status === 'active' ? 'warning' : 'success'" @click="doToggle(row)">
               {{ row.status === 'active' ? '停用' : '启用' }}
@@ -180,6 +187,23 @@
       <template #footer>
         <el-button @click="createDlg.visible = false">取消</el-button>
         <el-button type="primary" :loading="createDlg.loading" @click="doCreateSub">开通</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 登记手机号（店家新设备验证用） -->
+    <el-dialog v-model="phoneDlg.visible" title="登记手机号" width="440px" append-to-body>
+      <el-form label-width="80px">
+        <el-form-item label="账号"><span>{{ phoneDlg.row?.username }}</span></el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="phoneDlg.phone" placeholder="11 位手机号" maxlength="11" />
+        </el-form-item>
+        <el-form-item>
+          <span class="hint">店家在新设备登录商城时，验证码会发到这个号——请与店家确认后登记；留空保存 = 清除</span>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="phoneDlg.visible = false">取消</el-button>
+        <el-button type="primary" :loading="phoneDlg.loading" @click="doSetPhone">保存</el-button>
       </template>
     </el-dialog>
 
@@ -223,6 +247,7 @@ const dlg = reactive({ visible: false, form: {}, addresses: [], addrLoading: fal
 const sub = reactive({ visible: false, customer: null, users: [] })
 const createDlg = reactive({ visible: false, loading: false, form: {} })
 const pwdDlg = reactive({ visible: false, loading: false, row: null, password: '' })
+const phoneDlg = reactive({ visible: false, loading: false, row: null, phone: '' })
 
 function levelLabel(v) { return levels.find((l) => l.value === v)?.label || v }
 function levelTag(v) { return { A: 'danger', B: 'warning', C: 'info', default: '' }[v] || '' }
@@ -236,7 +261,7 @@ async function fetchList() {
     list.value = await customerApi.list({ ...query })
     // 附带子账号概览（customer_user 全量在租户内可见，RLS 保证）
     const { db } = await import('@/lib/cloudbase')
-    const res = await db.from('customer_user').select('id,username,display_name,status,customer_id')
+    const res = await db.from('customer_user').select('id,username,display_name,status,customer_id,phone')
     const rows = res?.data ?? res
     if (Array.isArray(rows)) {
       const byCustomer = new Map()
@@ -388,6 +413,33 @@ async function doToggle(row) {
     fetchList()
   } catch (e) {
     ElMessage.error(String(e?.message || e))
+  }
+}
+
+function maskPhone(p) {
+  const d = String(p || '').replace(/\D/g, '')
+  return d.length >= 11 ? d.slice(0, 3) + '****' + d.slice(-4) : String(p || '')
+}
+function openSetPhone(row) {
+  phoneDlg.row = row
+  phoneDlg.phone = row.phone || ''
+  phoneDlg.visible = true
+}
+async function doSetPhone() {
+  const p = String(phoneDlg.phone || '').trim()
+  if (p && !/^1\d{10}$/.test(p)) return ElMessage.warning('手机号需为 11 位数字')
+  phoneDlg.loading = true
+  try {
+    await userAdminApi.setPhone(phoneDlg.row.uid, p)
+    ElMessage.success(p ? '手机号已登记' : '手机号已清除')
+    phoneDlg.visible = false
+    await fetchList()
+    const fresh = list.value.find((c) => c.id === sub.customer?.id)
+    if (fresh) sub.users = (fresh.subUsers || []).map((u) => ({ ...u }))
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  } finally {
+    phoneDlg.loading = false
   }
 }
 
