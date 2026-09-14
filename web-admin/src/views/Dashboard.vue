@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="head">
-      <span class="hello">示例商家A · 经营日报</span>
+      <span class="hello">{{ brandTitle }}</span>
       <el-date-picker v-model="date" type="date" value-format="YYYY-MM-DD" :clearable="false" style="width: 150px" @change="loadAll" />
     </div>
 
@@ -59,8 +59,19 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { reportApi, ledgerApi, localToday } from '@/api/services'
+import { db } from '@/lib/cloudbase'
 
 const date = ref(localToday())
+const brandName = ref('')
+const brandTitle = computed(() => (brandName.value ? brandName.value + ' · 经营日报' : '经营日报'))
+onMounted(async () => {
+  try {
+    const res = await db.from('tenant').select('brand').limit(1)
+    const rows = (res?.data ?? res) || []
+    const b = rows[0]?.brand || {}
+    if (b.name) brandName.value = b.name
+  } catch (e) { /* 忽略 */ }
+})
 const today = ref({ orderCount: 0, sales: 0, pendingSort: 0, readyShip: 0, shipped: 0 })
 const week = ref([])
 const overdueTotal = ref(0)

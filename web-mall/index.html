@@ -117,7 +117,7 @@
 <body>
 
 <div id="login">
-  <div class="brand"><b>鲜配订货</b><p>示例商家A · 客户自助下单</p></div>
+  <div class="brand"><b id="m-brand">鲜配订货</b><p id="m-brand-sub">客户自助下单</p></div>
   <div class="card">
     <input id="lg-user" placeholder="账号" autocomplete="username">
     <div class="pwdrow">
@@ -440,6 +440,20 @@ async function enterMain() {
   renderCats(); renderGoods()
   if (droppedCart) ElMessageTransient(droppedCart + ' 个已下架商品已从购物车移除')
   gateCheck() // 登录安全门禁：新设备验证（记录模式下云端不拦截）
+  // 品牌化（T3.4）：页头/标题读租户品牌
+  try {
+    const tRows = (await rest('tenant', 'select=brand&limit=1')) || []
+    const brand = (tRows[0] && tRows[0].brand) || {}
+    if (brand.name) {
+      document.title = brand.name + ' 订货'
+      const bb = document.getElementById('m-brand')
+      if (bb) bb.textContent = brand.name
+      const bs = document.getElementById('m-brand-sub')
+      if (bs) bs.textContent = '客户自助下单'
+      const bf = document.getElementById('m-brand-foot')
+      if (bf) bf.textContent = (brand.short ? brand.short + ' · ' : '') + brand.name
+    }
+  } catch (e) { /* 品牌读取失败不影响使用 */ }
 }
 
 function renderCats() {
@@ -921,7 +935,7 @@ th{background:#f2f2f2}.r{text-align:right}
 .sum{margin-top:3mm;font-weight:700}
 .foot{margin-top:10mm;display:flex;justify-content:space-between}</style></head><body>
 <h2>月度对账单</h2>
-<div class="sub">鲜配 · 示例商家A</div>
+<div class="sub" id="m-brand-foot">鲜配 · 示例商家A</div>
 <div class="meta"><div>客户：${d.customer}</div><div>月份：${d.month}</div>
 <div>期初欠款：¥${d.opening.toFixed(2)}</div><div>期末欠款：¥${d.closing.toFixed(2)}</div></div>
 <table><thead><tr><th>日期</th><th>方向</th><th>关联单号</th><th>金额</th><th>余额</th></tr></thead><tbody>${rows}</tbody></table>

@@ -23,6 +23,7 @@ const routes = [
       { path: 'statements', name: 'statements', component: () => import('@/views/Statements.vue'), meta: { title: '对账', icon: 'Wallet' } },
       { path: 'security', name: 'security', component: () => import('@/views/Security.vue'), meta: { title: '安全', icon: 'Lock' } },
       { path: 'oplog', name: 'opLog', component: () => import('@/views/OpLog.vue'), meta: { title: '操作日志', icon: 'Document' } },
+      { path: 'platform', name: 'platform', component: () => import('@/views/Platform.vue'), meta: { title: '平台管理', icon: 'Monitor' } },
       { path: 'settings', name: 'settings', component: () => import('@/views/Settings.vue'), meta: { title: '设置', icon: 'Setting' } },
     ],
   },

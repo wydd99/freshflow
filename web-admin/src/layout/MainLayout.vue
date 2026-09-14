@@ -1,7 +1,7 @@
 <template>
   <el-container class="layout">
     <el-aside width="200px" class="aside">
-      <div class="logo">鲜配后台</div>
+      <div class="logo">{{ brandShort }}后台</div>
       <el-menu :default-active="route.path" router background-color="#1f2d3d" text-color="#bfcbd9" active-text-color="#409EFF">
         <el-menu-item v-for="item in menus" :key="item.path" :index="item.path">
           <el-icon><component :is="item.icon" /></el-icon>
@@ -28,14 +28,26 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { db } from '@/lib/cloudbase'
 import GateDialog from '@/components/GateDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
 const store = useAuthStore()
+
+// 品牌（T3.4）：logo 读租户品牌简称
+const brandShort = ref('鲜配')
+onMounted(async () => {
+  try {
+    const res = await db.from('tenant').select('brand').limit(1)
+    const rows = (res?.data ?? res) || []
+    const b = rows[0]?.brand || {}
+    if (b.short) brandShort.value = b.short
+  } catch (e) { /* 读取失败用默认 */ }
+})
 
 // 按账号的模块开关：merchant_a（营业账号）隐藏库存/采购；其他测试账号可见全功能。
 // 库存/采购的路由与自动联动逻辑保留，随时可改回全量可见。
@@ -55,6 +67,7 @@ const menus = computed(() => [
   { path: '/statements', title: '对账', icon: 'Wallet' },
   { path: '/security', title: '安全', icon: 'Lock' },
   { path: '/oplog', title: '操作日志', icon: 'Document' },
+  { path: '/platform', title: '平台管理', icon: 'Monitor' },
   { path: '/settings', title: '设置', icon: 'Setting' },
 ].filter((m) => !(HIDE_MODULES_FOR.includes(store.actor?.username) && HIDDEN_MODULES.includes(m.key))))
 
