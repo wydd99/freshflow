@@ -49,8 +49,31 @@
     </view>
   </view>
 
+  <view class="cpanel-mask" wx:if="{{cartPanel}}" bindtap="closeCart">
+    <view class="cpanel" catchtap="noop">
+      <view class="cpanel-title">购物车（{{count}} 件 · ¥{{total}}）</view>
+      <scroll-view scroll-y class="cpanel-list">
+        <view wx:for="{{cartItems}}" wx:key="id" class="crow">
+          <view class="cname">{{item.name}}<text class="cunit">¥{{item.price}}/{{item.unit}}</text></view>
+          <view class="cctrl">
+            <view class="cstep" data-id="{{item.id}}" bindtap="onMinus">−</view>
+            <text class="cq">{{item.qty}}</text>
+            <view class="cstep" data-id="{{item.id}}" bindtap="onPlus">＋</view>
+            <text class="csub">¥{{item.sub}}</text>
+            <text class="cdel" data-id="{{item.id}}" bindtap="onRemove">✕</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view wx:if="{{!cartItems.length}}" class="cpanel-empty">购物车是空的</view>
+      <view class="cpanel-btns">
+        <button class="cbtn" bindtap="onClearCart">清空</button>
+        <button class="cbtn primary" bindtap="onSubmit">去下单</button>
+      </view>
+    </view>
+  </view>
+
   <view class="cartbar">
-    <view class="sum">合计 <text class="money">¥{{total}}</text>（{{count}} 件）</view>
+    <view class="sum" bindtap="openCart">合计 <text class="money">¥{{total}}</text>（{{count}} 件）<text style="color:#1f9d55;font-size:22rpx"> · 查看 ▸</text></view>
     <view class="submit {{count ? '' : 'off'}}" bindtap="onSubmit">去下单</view>
   </view>
 </view>

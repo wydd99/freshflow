@@ -84,9 +84,20 @@
   .modal-addr { margin: 8px 0 2px; }
   .modal-addr select { width: 100%; padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; background: #fafafa; color: #333; }
   .maddr-hint { font-size: 12px; color: #999; margin-bottom: 4px; }
+  /* 购物车面板（持久化购物车） */
+  .cart-sum { cursor: pointer; }
+  .crow { padding: 10px 0; border-bottom: 1px solid #f2f2f2; }
+  .cname { font-size: 14px; margin-bottom: 6px; }
+  .cunit { font-size: 12px; color: #999; margin-left: 6px; }
+  .cctrl { display: flex; align-items: center; }
+  .cstep { width: 28px; height: 28px; line-height: 26px; text-align: center; background: #f5f5f5; border-radius: 6px; font-size: 16px; color: #333; user-select: none; cursor: pointer; }
+  .cq { min-width: 44px; text-align: center; font-size: 14px; }
+  .csub { flex: 1; text-align: right; color: #e64340; font-size: 14px; font-weight: 600; }
+  .cdel { margin-left: 12px; color: #bbb; font-size: 15px; cursor: pointer; }
+  .clist { max-height: 46vh; overflow: auto; }
   /* 确认下单弹窗 */
   .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 20; display: flex; align-items: center; justify-content: center; }
-  .modal { background: #fff; border-radius: 14px; width: 86%; max-width: 400px; padding: 20px; }
+  .modal { background: #fff; border-radius: 14px; width: 86%; max-width: 400px; padding: 20px; position: relative; }
   .modal h3 { font-size: 17px; margin-bottom: 12px; }
   .mline { font-size: 14px; color: #444; line-height: 1.9; }
   .mtotal { text-align: right; font-weight: 700; margin-top: 10px; }
@@ -132,7 +143,7 @@
     <div class="cats" id="cats"></div>
     <div class="goods" id="goods"></div>
     <div class="cartbar" id="cartbar">
-      <div class="sum">合计 <span class="money" id="cart-total">¥0.00</span>（<span id="cart-count">0</span> 件）</div>
+      <div class="sum cart-sum" onclick="openCart()">合计 <span class="money" id="cart-total">¥0.00</span>（<span id="cart-count">0</span> 件）<span style="color:#1f9d55;font-size:12px"> · 查看 ▸</span></div>
       <div class="submit off" id="cart-submit" onclick="confirmOrder()">去下单</div>
     </div>
   </div>
@@ -155,6 +166,18 @@
       <div class="mbtns">
         <button class="mcancel" onclick="closeModal()">取消</button>
         <button class="mok" onclick="submitOrder()">确认下单</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cartmask" class="modal-mask hide">
+    <div class="modal">
+      <div class="dclose" onclick="closeCart()">✕</div>
+      <h3>购物车 <span id="cart-panel-count" style="font-size:13px;color:#888;font-weight:400"></span></h3>
+      <div id="cart-lines" class="clist"></div>
+      <div class="mbtns">
+        <button class="mcancel" onclick="clearCart()">清空</button>
+        <button class="mok" onclick="cartGoOrder()">去下单</button>
       </div>
     </div>
   </div>
@@ -311,6 +334,17 @@ let customer = null, categories = [], allGoods = [], cart = {}, view = 'goods'
 let customerAddrs = []
 const CUTOFF_HOUR = 20 // 每日截单时间（24h，商城展示用）
 
+/* ---------- 购物车持久化（本机按客户隔离：退出重进不丢） ---------- */
+function cartKey() { return 'ff_cart_' + ((customer && customer.id) || 'x') }
+function saveCart() { try { localStorage.setItem(cartKey(), JSON.stringify(cart)) } catch (e) { /* 隐私模式等忽略 */ } }
+function loadCart() {
+  try {
+    const raw = localStorage.getItem(cartKey())
+    const obj = raw ? JSON.parse(raw) : null
+    return (obj && typeof obj === 'object' && !Array.isArray(obj)) ? obj : {}
+  } catch (e) { return {} }
+}
+
 function cutoffInfo() {
   const past = new Date().getHours() >= CUTOFF_HOUR
   return { past: past, tip: past
@@ -364,7 +398,18 @@ async function enterMain() {
       const price = cust ? Number(cust.price) : typ ? Number(typ.price) : Number(g.base_price)
       return { ...g, salePrice: price, source: cust ? 'customer' : typ ? 'type' : 'base' }
     })
+  // 恢复本机购物车（按客户隔离；下架商品自动剔除并按最新价计）
+  cart = loadCart()
+  const validCart = {}
+  let droppedCart = 0
+  for (const id in cart) {
+    if (allGoods.find((g) => g.id === Number(id))) validCart[id] = cart[id]
+    else droppedCart++
+  }
+  cart = validCart
+  saveCart()
   renderCats(); renderGoods()
+  if (droppedCart) ElMessageTransient(droppedCart + ' 个已下架商品已从购物车移除')
 }
 
 function renderCats() {
@@ -420,9 +465,10 @@ function dStep(d) {
 }
 function addFromDetail() {
   if (!detailGoods) return
-  cart[detailGoods.id] = (cart[detailGoods.id] || 0) + detailQty
+  cart[detailGoods.id] = Math.round(((cart[detailGoods.id] || 0) + detailQty) * 100) / 100
   const el = document.getElementById('q-' + detailGoods.id)
-  if (el) el.textContent = cart[detailGoods.id]
+  if (el) el.value = cart[detailGoods.id]
+  saveCart()
   refreshCartBar()
   closeDetail()
   ElMessageTransient('已加入购物车')
@@ -440,6 +486,7 @@ function step(id, d) {
   if (next <= 0) delete cart[id]; else cart[id] = next
   const el = document.getElementById('q-' + id)
   if (el) el.value = cart[id] || 0
+  saveCart()
   refreshCartBar()
 }
 
@@ -452,7 +499,61 @@ function setQty(id, v, skipRender) {
     const el = document.getElementById('q-' + id)
     if (el) el.value = cart[id] || 0
   }
+  saveCart()
   refreshCartBar()
+}
+
+/* ---------- 购物车面板（查看/改量/删行/清空） ---------- */
+function openCart() {
+  if (!Object.keys(cart).length) { ElMessageTransient('购物车还是空的，先选商品吧'); return }
+  renderCartPanel()
+  document.getElementById('cartmask').classList.remove('hide')
+}
+function closeCart() { document.getElementById('cartmask').classList.add('hide') }
+function renderCartPanel() {
+  const el = document.getElementById('cart-lines')
+  const ids = Object.keys(cart)
+  let total = 0
+  el.innerHTML = ids.map((id) => {
+    const g = allGoods.find((x) => x.id === Number(id))
+    if (!g) return ''
+    const sub = cart[id] * g.salePrice
+    total += sub
+    return '<div class="crow">'
+      + '<div class="cname">' + g.name + '<span class="cunit">¥' + g.salePrice.toFixed(2) + '/' + g.unit + '</span></div>'
+      + '<div class="cctrl">'
+      + '<div class="cstep" onclick="cartStep(' + g.id + ',-1)">−</div>'
+      + '<span class="cq">' + cart[id] + '</span>'
+      + '<div class="cstep" onclick="cartStep(' + g.id + ',1)">＋</div>'
+      + '<span class="csub">¥' + sub.toFixed(2) + '</span>'
+      + '<span class="cdel" onclick="cartRemove(' + g.id + ')">✕</span>'
+      + '</div></div>'
+  }).join('')
+  document.getElementById('cart-panel-count').textContent = '共 ' + ids.length + ' 种 · 合计 ¥' + total.toFixed(2)
+}
+function afterCartMutate(id) {
+  saveCart()
+  const gel = document.getElementById('q-' + id)
+  if (gel) gel.value = cart[id] || 0
+  refreshCartBar()
+  if (!Object.keys(cart).length) closeCart()
+  else renderCartPanel()
+}
+function cartStep(id, d) {
+  const next = Math.max(0, Math.round(((cart[id] || 0) + d) * 100) / 100)
+  if (next <= 0) delete cart[id]; else cart[id] = next
+  afterCartMutate(id)
+}
+function cartRemove(id) { delete cart[id]; afterCartMutate(id) }
+function cartGoOrder() { closeCart(); confirmOrder() }
+function clearCart() {
+  if (!Object.keys(cart).length) return
+  if (!confirm('清空购物车？')) return
+  cart = {}
+  saveCart()
+  refreshCartBar()
+  renderGoods(curCat)
+  closeCart()
 }
 
 function refreshCartBar() {
@@ -546,6 +647,7 @@ async function submitOrder() {
     if (!order || !order.id) throw new Error('订单创建后未查询到，请勿重复提交，截图联系配送站')
     await insert('order_item', items.map((p) => ({ ...p, order_id: order.id })))
     cart = {}
+    saveCart()
     refreshCartBar(); renderGoods(curCat)
     alert(`下单成功 ${orderNo}，配送站会尽快确认`)
   } catch (e) {

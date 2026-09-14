@@ -37,3 +37,21 @@
 .result-title { font-size: 34rpx; font-weight: 700; margin-top: 14rpx; }
 .result-lines { font-size: 26rpx; color: #666; margin-top: 14rpx; line-height: 1.7; white-space: pre-line; }
 .result-btn { margin: 34rpx auto 0; background: #1f9d55; color: #fff; font-size: 30rpx; padding: 18rpx 0; border-radius: 44rpx; width: 70%; }
+
+/* 购物车面板（持久化购物车） */
+.cpanel-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40; display: flex; align-items: flex-end; }
+.cpanel { width: 100%; background: #fff; border-radius: 24rpx 24rpx 0 0; padding: 28rpx 28rpx 40rpx; max-height: 72vh; display: flex; flex-direction: column; }
+.cpanel-title { font-size: 32rpx; font-weight: 700; margin-bottom: 20rpx; }
+.cpanel-list { flex: 1; max-height: 44vh; }
+.cpanel-empty { text-align: center; color: #999; font-size: 26rpx; padding: 40rpx 0; }
+.crow { padding: 18rpx 0; border-bottom: 1rpx solid #f0f0f0; }
+.cname { font-size: 28rpx; margin-bottom: 12rpx; }
+.cunit { font-size: 22rpx; color: #999; margin-left: 8rpx; }
+.cctrl { display: flex; align-items: center; }
+.cstep { width: 56rpx; height: 56rpx; line-height: 52rpx; text-align: center; background: #f5f5f5; border-radius: 8rpx; font-size: 34rpx; color: #333; }
+.cq { min-width: 88rpx; text-align: center; font-size: 28rpx; }
+.csub { flex: 1; text-align: right; color: #e64340; font-size: 28rpx; font-weight: 600; }
+.cdel { margin-left: 20rpx; color: #bbb; font-size: 32rpx; padding: 0 8rpx; }
+.cpanel-btns { display: flex; gap: 20rpx; margin-top: 24rpx; }
+.cbtn { flex: 1; font-size: 30rpx; background: #f1f3f2; color: #444; border-radius: 44rpx; }
+.cbtn.primary { background: #1f9d55; color: #fff; }

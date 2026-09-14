@@ -13,6 +13,8 @@ Page({
     categories: [],
     goods: [],
     cart: {},
+    cartPanel: false,
+    cartItems: [],
     total: '0.00',
     count: 0,
     deliveryDate: '',
@@ -85,6 +87,18 @@ Page({
         allGoods: goods,
         deliveryDate: this.data.deliveryDate || today,
       })
+      // 恢复本机购物车（按客户持久化；下架商品剔除，价格按当次取价链实时计）
+      const rawCart = this.loadCart(customer.id)
+      const cart = {}
+      let dropped = 0
+      for (const id in rawCart) {
+        if (goods.find((g) => String(g.id) === String(id))) cart[id] = rawCart[id]
+        else dropped++
+      }
+      this.setData({ cart })
+      this.recalc()
+      this.saveCart()
+      if (dropped) wx.showToast({ title: dropped + ' 个下架商品已移除', icon: 'none' })
     } catch (e) {
       if (e.statusCode === 401) { api.logout(); wx.reLaunch({ url: '/pages/login/login' }); return }
       wx.showToast({ title: '加载失败', icon: 'none' })
@@ -125,6 +139,7 @@ Page({
     else cart[id] = Math.round(v * 100) / 100
     this.setData({ cart })
     this.recalc()
+    this.saveCart()
   },
   step(e, d) {
     const id = e.currentTarget.dataset.id
@@ -134,19 +149,65 @@ Page({
     else cart[id] = next
     this.setData({ cart })
     this.recalc()
+    this.saveCart()
+  },
+
+  /* ---------- 购物车持久化与面板（退出重进不丢） ---------- */
+  storageKey(cid) { return 'ff_cart_' + (cid || 'x') },
+  loadCart(cid) {
+    try {
+      const raw = wx.getStorageSync(this.storageKey(cid))
+      const o = raw ? (typeof raw === 'string' ? JSON.parse(raw) : raw) : null
+      return (o && typeof o === 'object' && !Array.isArray(o)) ? o : {}
+    } catch (e) { return {} }
+  },
+  saveCart() {
+    const c = this.data.customer
+    if (!c || !c.id) return
+    try { wx.setStorageSync(this.storageKey(c.id), JSON.stringify(this.data.cart)) } catch (e) {}
+  },
+  openCart() {
+    if (!Object.keys(this.data.cart).length) { wx.showToast({ title: '购物车还是空的', icon: 'none' }); return }
+    this.recalc()
+    this.setData({ cartPanel: true })
+  },
+  closeCart() { this.setData({ cartPanel: false }) },
+  noop() {},
+  onRemove(e) {
+    const id = e.currentTarget.dataset.id
+    const cart = { ...this.data.cart }
+    delete cart[id]
+    this.setData({ cart })
+    this.recalc()
+    this.saveCart()
+  },
+  onClearCart() {
+    const that = this
+    wx.showModal({
+      title: '清空购物车？',
+      success(r) {
+        if (r.confirm) { that.setData({ cart: {}, cartPanel: false }); that.recalc(); that.saveCart() }
+      },
+    })
   },
 
   recalc() {
     const cart = this.data.cart
     let count = 0
     let total = 0
+    const cartItems = []
     for (const id in cart) {
       const g = (this.data.allGoods || []).find((x) => x.id === Number(id) || x.id === id)
       if (!g) continue
       count += cart[id]
       total += cart[id] * Number(g.salePrice)
+      cartItems.push({
+        id: g.id, name: g.name, unit: g.unit,
+        price: Number(g.salePrice).toFixed(2), qty: cart[id],
+        sub: (cart[id] * Number(g.salePrice)).toFixed(2),
+      })
     }
-    this.setData({ count, total: total.toFixed(2) })
+    this.setData({ count, total: total.toFixed(2), cartItems })
   },
 
   onSubmit() {
@@ -210,8 +271,9 @@ Page({
         amount: Math.round(p.qty * Number(p.goods.salePrice) * 100) / 100,
         status: 'pending',
       })))
-      this.setData({ cart: {} })
+      this.setData({ cart: {}, cartPanel: false })
       this.recalc()
+      this.saveCart()
       this.showResult(true, order.order_no)
     } catch (e) {
       if (e.statusCode === 401) { api.logout(); wx.reLaunch({ url: '/pages/login/login' }); return }
