@@ -288,6 +288,13 @@ async function doSave() {
 async function fetchList() {
   loading.value = true
   try {
+    // 草单自动整合：同客户+同发货日期的多份草单自动并单（已确认/已出单不动）
+    try {
+      const merged = await orderApi.mergeDrafts()
+      if (merged && merged.length) {
+        ElMessage.success('已自动整合 ' + merged.length + ' 份重复草单：' + merged.map((m) => m.subs.join('、') + ' → ' + m.main).join('；'))
+      }
+    } catch (e) { /* 整合失败不阻断列表 */ }
     list.value = await orderApi.list({ status: query.status })
   } catch (e) {
     ElMessage.error(String(e?.message || e))

@@ -19,6 +19,7 @@ Page({
     count: 0,
     deliveryDate: '',
     recording: false,
+    submitting: false,
     result: { visible: false, ok: false, orderNo: '', msg: '', countdown: 5 },
   },
 
@@ -234,9 +235,20 @@ Page({
   },
 
   async submitOrder(items, total, deliveryDate) {
+    if (this.data.submitting) return
+    this.setData({ submitting: true })
     wx.showLoading({ title: '提交中' })
     try {
       const customer = this.data.customer
+      // 防重复下单：120 秒内同客户同发货日期、内容相同（金额+行数一致 = 卡顿/重试重提）的草单，直接拦截
+      const since = new Date(Date.now() - 120 * 1000).toISOString()
+      const recent = (await api.rest('order_main', `select=order_no,amount_original,sort_total&customer_id=eq.${customer.id}&delivery_date=eq.${deliveryDate}&status=eq.draft&created_at=gte.${encodeURIComponent(since)}`)) || []
+      const dupe = recent.find((r) => Math.abs(Number(r.amount_original) - Number(total)) < 0.01 && Number(r.sort_total) === items.length)
+      if (dupe) {
+        wx.hideLoading()
+        wx.showModal({ title: '请勿重复提交', content: `刚刚已提交过相同内容的一单（${dupe.order_no}），无需重复；如需补充其他商品，选好后直接下单即可，配送站会自动合并`, showCancel: false, confirmText: '知道了' })
+        return
+      }
       const now = new Date()
       const ymd = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`
       const todays = (await api.rest('order_main', `select=order_no&created_at=gte.${ymd}T00:00:00Z`)) || []
@@ -280,6 +292,7 @@ Page({
       this.showResult(false, '', (e.body && (e.body.message || e.body.error)) || '网络异常，请重试')
     } finally {
       wx.hideLoading()
+      this.setData({ submitting: false })
     }
   },
 

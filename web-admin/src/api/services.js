@@ -415,6 +415,70 @@ export const orderApi = {
     const items = unwrap(await db.from('order_item').select('*').eq('order_id', id).order('id')) || []
     return { order, items: items.map((i) => ({ ...i, orderPrice: Number(i.order_price), amount: Number(i.amount) })) }
   },
+
+  /** 草单自动整合（防碎单）：同客户+同发货日期的多份 draft 合并进最早一份。
+   *  范围仅限草单（draft）——已确认/已出单的不动。同商品+同单价+同单位合并数量，其余行挪入主单；
+   *  副单作废并备注「已并入 主单号」；主单重算金额/行数；写 op_log 留痕。返回合并摘要数组。 */
+  async mergeDrafts() {
+    const drafts = (unwrap(await db.from('order_main').select('*').eq('status', 'draft').order('created_at'))) || []
+    const groups = new Map()
+    for (const o of drafts) {
+      const key = String(o.customer_id) + '|' + String(o.delivery_date)
+      if (!groups.has(key)) groups.set(key, [])
+      groups.get(key).push(o)
+    }
+    const done = []
+    for (const orders of groups.values()) {
+      if (orders.length < 2) continue
+      const main = orders[0]
+      const subs = orders.slice(1)
+      const mainItems = (unwrap(await db.from('order_item').select('*').eq('order_id', main.id))) || []
+      let touched = false
+      const mergedNos = []
+      for (const sub of subs) {
+        if (sub.status !== 'draft') continue // 防御：读取后状态若变化则跳过
+        const subItems = (unwrap(await db.from('order_item').select('*').eq('order_id', sub.id))) || []
+        for (const it of subItems) {
+          const twin = mainItems.find((m) => m.goods_id === it.goods_id && Number(m.order_price) === Number(it.order_price) && m.unit === it.unit)
+          if (twin) {
+            const newQty = Math.round((Number(twin.order_qty) + Number(it.order_qty)) * 1000) / 1000
+            const newAmt = Math.round(Number(it.order_price) * newQty * 100) / 100
+            await restWrite('PATCH', 'order_item', `id=eq.${twin.id}`, { order_qty: newQty, amount: newAmt })
+            twin.order_qty = newQty
+            twin.amount = newAmt
+            await restWrite('DELETE', 'order_item', `id=eq.${it.id}`)
+          } else {
+            await restWrite('PATCH', 'order_item', `id=eq.${it.id}`, { order_id: main.id })
+            mainItems.push({ ...it, order_id: main.id })
+          }
+        }
+        await restWrite('PATCH', 'order_main', `id=eq.${sub.id}`, {
+          status: 'void',
+          remark: (sub.remark ? sub.remark + '；' : '') + '已并入 ' + main.order_no,
+        })
+        touched = true
+        mergedNos.push(sub.order_no)
+      }
+      if (touched) {
+        const all = (unwrap(await db.from('order_item').select('id,amount').eq('order_id', main.id))) || []
+        const total = all.reduce((s, r) => s + Number(r.amount ?? 0), 0)
+        await restWrite('PATCH', 'order_main', `id=eq.${main.id}`, {
+          amount_original: Math.round(total * 100) / 100,
+          sort_total: all.length,
+        })
+        try {
+          const tid = await tenantId()
+          await restWrite('POST', 'op_log', '', {
+            tenant_id: tid, actor_type: 'admin', action: 'merge_draft',
+            entity: 'order', entity_id: main.id,
+            detail: { main: main.order_no, merged: mergedNos },
+          })
+        } catch (e) { /* 日志失败不阻断整合 */ }
+        done.push({ main: main.order_no, subs: mergedNos })
+      }
+    }
+    return done
+  },
 }
 
 export const printApi = {

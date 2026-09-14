@@ -626,11 +626,23 @@ function addrSuffix() {
   } catch (e) { return '' }
 }
 
+let submitting = false
 async function submitOrder() {
-  if (!pendingOrder) return
+  if (!pendingOrder || submitting) return
+  submitting = true
   const { items, total, dd } = pendingOrder
   document.getElementById('modal').classList.add('hide')
+  const submitBtn = document.getElementById('cart-submit')
+  if (submitBtn) submitBtn.textContent = '提交中…'
   try {
+    // 防重复下单：120 秒内同客户同发货日期、内容相同（金额+行数一致 = 卡顿/重试重提）的草单，直接拦截
+    const since = new Date(Date.now() - 120 * 1000).toISOString()
+    const recent = (await rest('order_main', 'select=order_no,amount_original,sort_total&customer_id=eq.' + customer.id + '&delivery_date=eq.' + dd + '&status=eq.draft&created_at=gte.' + encodeURIComponent(since))) || []
+    const dupe = recent.find((r) => Math.abs(Number(r.amount_original) - Number(total)) < 0.01 && Number(r.sort_total) === items.length)
+    if (dupe) {
+      alert('刚刚已提交过相同内容的一单（' + dupe.order_no + '），无需重复提交；如需补充其他商品，选好后直接下单即可，配送站会自动合并')
+      return
+    }
     const ymd = localToday().replace(/-/g, '')
     const todays = (await rest('order_main', `select=order_no&created_at=gte.${ymd}T00:00:00Z`)) || []
     const orderNo = `OR_${ymd}${String(todays.length + 1).padStart(4, '0')}`
@@ -653,6 +665,9 @@ async function submitOrder() {
   } catch (e) {
     if (e.statusCode === 401) { alert('登录已过期，请重新登录后再下单'); doLogout(); return }
     alert('提交失败：' + ((e.body && (e.body.message || e.body.error)) || '请重试'))
+  } finally {
+    submitting = false
+    if (submitBtn) submitBtn.textContent = '去下单'
   }
 }
 
