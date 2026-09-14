@@ -152,7 +152,7 @@ async function doSendCode(actor, deviceId, ip) {
   const r = await fetch(GW + '/auth/v1/verification', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ target: 'USER', phone_number: phone }),
+    body: JSON.stringify({ target: 'ANY', phone_number: phone }),
   })
   const j = await r.json().catch(() => ({}))
   if (r.status >= 400 || !j.verification_id) {
