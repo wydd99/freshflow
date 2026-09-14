@@ -41,7 +41,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { auth, db } from '@/lib/cloudbase'
+import { auth, db, CLOUDBASE_ENV_ID } from '@/lib/cloudbase'
 
 const form = reactive({ old: '', p1: '', p2: '' })
 
@@ -70,7 +70,7 @@ async function saveBrand() {
     if (!brandId) await loadBrand()
     if (!brandId) throw new Error('租户信息读取失败')
     const BEAR = ['Bea', 'rer'].join('') + ' '
-    const r = await fetch('https://freshflow-ENV_ID.api.tcloudbasegateway.com/v1/rdb/rest/tenant?id=eq.' + brandId, {
+    const r = await fetch(`https://${CLOUDBASE_ENV_ID}.api.tcloudbasegateway.com/v1/rdb/rest/tenant?id=eq.` + brandId, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: BEAR + tk, Prefer: 'return=representation' },
       body: JSON.stringify({ brand: payload }),
@@ -97,7 +97,7 @@ async function save() {
     const { data } = await auth.getSession()
     const tk = data?.session?.access_token
     if (!tk) throw new Error('会话失效，请重新登录')
-    const r = await fetch('https://freshflow-ENV_ID.api.tcloudbasegateway.com/auth/v1/user/password', {
+    const r = await fetch(`https://${CLOUDBASE_ENV_ID}.api.tcloudbasegateway.com/auth/v1/user/password`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tk },
       body: JSON.stringify({ old_password: form.old, new_password: form.p1 }),
