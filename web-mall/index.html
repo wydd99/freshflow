@@ -18,21 +18,59 @@
   .pwdrow { position: relative; }
   .pwdrow input { padding-right: 44px; }
   .eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; opacity: .55; user-select: none; }
-  #login button { width: 100%; background: #1f9d55; color: #fff; border: none; border-radius: 24px; padding: 12px; font-size: 17px; }
+  #login button { width: 100%; background: var(--g-primary); color: #fff; border: none; border-radius: 24px; padding: 12px; font-size: 17px; }
   #login .tip { text-align: center; color: #999; font-size: 12px; margin-top: 14px; }
   .err { color: #e64340; font-size: 13px; margin-top: 12px; text-align: center; }
   .hide2 { display: none !important; }
   /* 主界面 */
-  header { position: sticky; top: 0; z-index: 5; background: #1f9d55; color: #fff; padding: 12px 16px; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--g-head); color: var(--g-head-ink); padding: 12px 16px; }
   header .hello { font-size: 17px; font-weight: 600; }
   header .sub { display: flex; justify-content: space-between; font-size: 13px; opacity: .95; margin-top: 6px; }
   header select { border: none; background: rgba(255,255,255,.15); color: #fff; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
   header .logout { cursor: pointer; }
-  .cats { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; background: #fff; position: sticky; top: 66px; z-index: 4; }
+  header .themeswitch { cursor: pointer; background: rgba(255,255,255,.14); border: none; color: inherit; padding: 3px 10px; border-radius: 14px; font-size: 12px; }
+  /* ===== 主题系统（三套可切换：natural / pro / warm） ===== */
+  :root, body[data-theme="natural"] {
+    --g-primary: #1f9d55;
+    --g-primary-dark: #157a41;
+    --g-head: linear-gradient(135deg, #1f9d55, #35b46f);
+    --g-head-ink: #ffffff;
+    --g-ink: #1a2b22;
+    --g-line: #e8ece9;
+    --g-card: #ffffff;
+    --g-bg: #f4f7f5;
+    --g-radius: 14px;
+    --g-shadow: 0 1px 2px rgba(16,51,34,.05), 0 6px 18px rgba(16,51,34,.06);
+  }
+  body[data-theme="pro"] {
+    --g-primary: #0f1720;
+    --g-primary-dark: #020617;
+    --g-head: linear-gradient(135deg, #0f1720, #1e293b);
+    --g-head-ink: #ffffff;
+    --g-ink: #0f1720;
+    --g-line: #e2e8f0;
+    --g-card: #ffffff;
+    --g-bg: #f8fafc;
+    --g-radius: 12px;
+    --g-shadow: 0 1px 2px rgba(15,23,32,.06), 0 6px 18px rgba(15,23,32,.05);
+  }
+  body[data-theme="warm"] {
+    --g-primary: #d97706;
+    --g-primary-dark: #b45309;
+    --g-head: linear-gradient(135deg, #b45309, #d97706);
+    --g-head-ink: #ffffff;
+    --g-ink: #2b1f12;
+    --g-line: #eee5d8;
+    --g-card: #ffffff;
+    --g-bg: #fdfaf5;
+    --g-radius: 14px;
+    --g-shadow: 0 1px 2px rgba(90,60,20,.05), 0 6px 18px rgba(90,60,20,.06);
+  }
+  .cats { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: var(--g-card); position: sticky; top: 66px; z-index: 4; box-shadow: 0 1px 0 var(--g-line); }
   .cat { padding: 6px 16px; border-radius: 16px; background: #f1f3f2; font-size: 13px; color: #444; }
-  .cat.on { background: #1f9d55; color: #fff; }
+  .cat.on { background: var(--g-primary); color: #fff; }
   .goods { padding: 10px 12px 120px; }
-  .gcard { display: flex; align-items: center; justify-content: space-between; background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .gcard { display: flex; align-items: center; justify-content: space-between; background: var(--g-card); border-radius: var(--g-radius); padding: 14px; margin-bottom: 10px; box-shadow: var(--g-shadow); }
   .gname { font-size: 16px; font-weight: 600; }
   .gunit { color: #999; font-size: 12px; font-weight: 400; }
   .gsub { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
@@ -40,18 +78,18 @@
   .stepper { display: flex; align-items: center; gap: 12px; }
   .step { width: 30px; height: 30px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 20px; cursor: pointer; user-select: none; }
   .minus { border: 1px solid #ccc; color: #666; }
-  .plus { background: #1f9d55; color: #fff; }
+  .plus { background: var(--g-primary); color: #fff; }
   .qty { min-width: 24px; text-align: center; font-size: 16px; }
   .qin { width: 70px; text-align: center; font-size: 16px; border: 1px solid #e2e2e2; border-radius: 8px; padding: 7px 2px; outline: none; }
   .qin::-webkit-outer-spin-button, .qin::-webkit-inner-spin-button { -webkit-appearance: none; }
   .obar { display: flex; gap: 10px; padding: 12px; }
   .obar button { border: none; padding: 8px 18px; border-radius: 18px; font-size: 14px; background: #fff; color: #444; cursor: pointer; }
-  .obar button.on { background: #1f9d55; color: #fff; }
+  .obar button.on { background: var(--g-primary); color: #fff; }
   .ocard { background: #fff; border-radius: 12px; padding: 14px; margin: 0 12px 10px; }
   .orow { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #444; margin-top: 6px; }
   .orow b { font-size: 15px; color: #222; }
   .omoney { color: #e64340; font-weight: 700; }
-  .reorder { border: 1px solid #1f9d55; color: #1f9d55; background: #fff; border-radius: 16px; padding: 4px 14px; font-size: 12px; cursor: pointer; }
+  .reorder { border: 1px solid var(--g-primary); color: var(--g-primary); background: #fff; border-radius: 16px; padding: 4px 14px; font-size: 12px; cursor: pointer; }
   #orders .empty, #goods .empty { text-align: center; color: #999; padding: 60px 0; }
   .cartbar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; background: #fff; padding: 12px 16px; box-shadow: 0 -4px 14px rgba(0,0,0,.07); z-index: 6; }
   .sum { flex: 1; font-size: 15px; }
@@ -65,7 +103,7 @@
   .omoney { color: #e64340; font-weight: 700; }
   .obar { display: flex; gap: 10px; padding: 0 12px; }
   .obar button { flex: 1; border: none; padding: 10px; border-radius: 10px; font-size: 15px; background: #fff; color: #333; }
-  .obar button.on { background: #1f9d55; color: #fff; }
+  .obar button.on { background: var(--g-primary); color: #fff; }
   /* 商品详情弹窗 */
   .dmask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 20; display: flex; align-items: center; justify-content: center; }
   .dcard { background: #fff; border-radius: 14px; width: 86%; max-width: 400px; padding: 20px; position: relative; }
@@ -118,6 +156,7 @@
 
 <div id="login">
   <div class="brand"><b id="m-brand">鲜配订货</b><p id="m-brand-sub">客户自助下单</p></div>
+      <button id="theme-switch" class="themeswitch" onclick="themeSwitch()">🎨 主题</button>
   <div class="card">
     <input id="lg-user" placeholder="账号" autocomplete="username">
     <div class="pwdrow">
@@ -356,6 +395,24 @@ function doLogout() {
 /* ---------- 主界面 ---------- */
 let customer = null, categories = [], allGoods = [], cart = {}, view = 'goods'
 let customerAddrs = []
+/* 界面主题（三套循环切换，本地记忆） */
+const THEMES = ['natural', 'pro', 'warm']
+const THEME_LABELS = { natural: '清新自然', pro: '现代专业', warm: '暖食市集' }
+function themeInit() {
+  let saved = localStorage.getItem('ff_theme_mall')
+  if (!THEMES.includes(saved)) saved = 'natural'
+  document.body.dataset.theme = saved
+  const btn = document.getElementById('theme-switch')
+  if (btn) btn.textContent = '🎨 ' + THEME_LABELS[saved]
+}
+function themeSwitch() {
+  const cur = document.body.dataset.theme || 'natural'
+  const next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length]
+  localStorage.setItem('ff_theme_mall', next)
+  document.body.dataset.theme = next
+  const btn = document.getElementById('theme-switch')
+  if (btn) btn.textContent = '🎨 ' + THEME_LABELS[next]
+}
 let searchKw = ''
 function onSearchInput() {
   searchKw = String(document.getElementById('mall-search').value || '').trim()
@@ -439,6 +496,7 @@ async function enterMain() {
   saveCart()
   renderCats(); renderGoods()
   if (droppedCart) ElMessageTransient(droppedCart + ' 个已下架商品已从购物车移除')
+  themeInit()
   gateCheck() // 登录安全门禁：新设备验证（记录模式下云端不拦截）
   // 品牌化（T3.4）：页头/标题读租户品牌
   try {

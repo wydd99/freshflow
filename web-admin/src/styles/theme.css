@@ -1,0 +1,110 @@
+/* FreshFlow 商家端主题系统（三主题可切换：natural / pro / warm）
+   机制：document.documentElement.dataset.theme = 'natural'|'pro'|'warm'
+   默认 natural。每套主题定义：品牌主色、侧栏配色、内容区底色、EP 主色梯度。 */
+
+/* ---------- 共享质感 ---------- */
+:root {
+  --ff-radius-card: 10px;
+  --ff-radius-btn: 8px;
+  --ff-radius-pop: 14px;
+  --ff-shadow-card: 0 1px 3px rgba(16, 34, 26, 0.07), 0 4px 16px rgba(16, 34, 26, 0.05);
+  --ff-shadow-pop: 0 8px 28px rgba(16, 34, 26, 0.14);
+}
+
+/* ---------- 主题 A · 清新自然（默认） ---------- */
+:root, :root[data-theme='natural'] {
+  --ff-primary: #1f9d55;
+  --ff-primary-dark: #157a41;
+  --ff-primary-light: #e9f7ee;
+  --ff-primary-light3: #4a8a6b;
+  --ff-primary-light5: #7ba88f;
+  --ff-primary-light7: #b3cec0;
+  --ff-primary-light8: #cfe0d6;
+  --ff-primary-dark2: #157a41;
+  --ff-sidebar-bg: #1c2f26;
+  --ff-sidebar-text: #b9cec2;
+  --ff-sidebar-active: #ffffff;
+  --ff-sidebar-active-bg: rgba(31, 157, 85, 0.22);
+  --ff-sidebar-border: rgba(255, 255, 255, 0.05);
+  --ff-content-bg: #f5f7f6;
+  --ff-header-line: #e6ebe8;
+  --el-color-primary: var(--ff-primary);
+  --el-color-primary-light-3: var(--ff-primary-light3);
+  --el-color-primary-light-5: var(--ff-primary-light5);
+  --el-color-primary-light-7: var(--ff-primary-light7);
+  --el-color-primary-light-8: var(--ff-primary-light8);
+  --el-color-primary-light-9: var(--ff-primary-light);
+  --el-color-primary-dark-2: var(--ff-primary-dark2);
+}
+
+/* ---------- 主题 B · 现代专业 ---------- */
+:root[data-theme='pro'] {
+  --ff-primary: #2563eb;
+  --ff-primary-dark: #1d4ed8;
+  --ff-primary-light: #dbeafe;
+  --ff-primary-light3: #5b8def;
+  --ff-primary-light5: #8baff5;
+  --ff-primary-light7: #bdd0fa;
+  --ff-primary-light8: #d4e2fc;
+  --ff-primary-dark2: #1d4ed8;
+  --ff-sidebar-bg: #0f1720;
+  --ff-sidebar-text: #8fa3b8;
+  --ff-sidebar-active: #ffffff;
+  --ff-sidebar-active-bg: #16324a;
+  --ff-sidebar-border: rgba(255, 255, 255, 0.05);
+  --ff-content-bg: #f8fafc;
+  --ff-header-line: #e6ebf1;
+  --el-color-primary: var(--ff-primary);
+  --el-color-primary-light-3: var(--ff-primary-light3);
+  --el-color-primary-light-5: var(--ff-primary-light5);
+  --el-color-primary-light-7: var(--ff-primary-light7);
+  --el-color-primary-light-8: var(--ff-primary-light8);
+  --el-color-primary-light-9: var(--ff-primary-light);
+  --el-color-primary-dark-2: var(--ff-primary-dark2);
+}
+
+/* ---------- 主题 C · 暖食市集 ---------- */
+:root[data-theme='warm'] {
+  --ff-primary: #d97706;
+  --ff-primary-dark: #b45309;
+  --ff-primary-light: #fdf0dd;
+  --ff-primary-light3: #e0953c;
+  --ff-primary-light5: #eab274;
+  --ff-primary-light7: #f4d3ab;
+  --ff-primary-light8: #f9e3c8;
+  --ff-primary-dark2: #b45309;
+  --ff-sidebar-bg: #3d2b1f;
+  --ff-sidebar-text: #d8c4ae;
+  --ff-sidebar-active: #ffffff;
+  --ff-sidebar-active-bg: rgba(217, 119, 6, 0.25);
+  --ff-sidebar-border: rgba(255, 255, 255, 0.05);
+  --ff-content-bg: #faf7f2;
+  --ff-header-line: #eee5d8;
+  --el-color-primary: var(--ff-primary);
+  --el-color-primary-light-3: var(--ff-primary-light3);
+  --el-color-primary-light-5: var(--ff-primary-light5);
+  --el-color-primary-light-7: var(--ff-primary-light7);
+  --el-color-primary-light-8: var(--ff-primary-light8);
+  --el-color-primary-light-9: var(--ff-primary-light);
+  --el-color-primary-dark-2: var(--ff-primary-dark2);
+}
+
+/* ---------- 应用变量 ---------- */
+body {
+  background: var(--ff-content-bg);
+}
+.el-card {
+  border-radius: var(--ff-radius-card);
+  border-color: var(--ff-header-line);
+  box-shadow: var(--ff-shadow-card) !important;
+}
+.el-card__header { border-bottom-color: var(--ff-header-line); }
+.el-button { border-radius: var(--ff-radius-btn); font-weight: 500; }
+.el-button--primary:not(.is-disabled):hover { filter: brightness(1.06); }
+.el-table { --el-table-header-bg-color: var(--ff-primary-light); --el-table-row-hover-bg-color: var(--ff-primary-light); }
+.el-table th.el-table__cell { font-weight: 600; color: #3d4f45; }
+.el-table .el-table__cell { padding: 9px 0; }
+.el-tag { border-radius: 5px; font-weight: 500; }
+.el-input__wrapper, .el-select__wrapper, .el-textarea__inner { border-radius: var(--ff-radius-btn); }
+.el-dialog { border-radius: var(--ff-radius-pop); box-shadow: var(--ff-shadow-pop) !important; }
+.el-message { border-radius: 10px; }
