@@ -60,6 +60,11 @@ async function svcPatch(table, query, body) {
   if (!r.ok) throw new Error('svc 更新 ' + table + ' HTTP ' + r.status)
   return r.json().catch(() => [])
 }
+async function svcDelete(table, query) {
+  const r = await fetch(GW + '/v1/rdb/rest/' + table + '?' + query, { method: 'DELETE', headers: svcHeaders() })
+  if (!r.ok) throw new Error('svc 删除 ' + table + ' HTTP ' + r.status)
+  return true
+}
 
 async function audit(actor, deviceId, ip, event, detail) {
   try {
@@ -121,12 +126,20 @@ async function doCheck(actor, deviceId, ip) {
     await ensureDevice(actor, deviceId, ip)
     await audit(actor, deviceId, ip, 'new_device', { enforce })
   }
+  // 租户级功能开关（分级服务 P1）：features.phone_verify=false 的租户不强制验证
+  let tenantVerify = true
+  try {
+    const tRows = await svcGet('tenant', 'select=features&id=eq.' + actor.tenant_id)
+    const feats = (tRows[0] && tRows[0].features) || {}
+    if (feats.phone_verify === false) tenantVerify = false
+  } catch (e) { /* 读取失败按默认（需验证） */ }
+
   // 产品决定（2026-09-14）：手机验证只针对顾客端；商家端（后台管理员）保留审计记录但不拦截
   if (actor.kind === 'admin') {
     return { ok: true, trusted: true, note: 'admin_bypass' }
   }
   const hasPhone = !!normalizeCnPhone(actor.phone)
-  if (!enforce) {
+  if (!enforce || !tenantVerify) {
     // 记录模式：不拦截，仅返回画像（前端无需弹验证）
     return { ok: true, trusted: true, enforce: false, note: 'record_only', has_phone: hasPhone }
   }
@@ -205,6 +218,18 @@ async function doVerify(actor, deviceId, code, ip) {
   throw new Error('验证码错误（还可以试 ' + (5 - fail) + ' 次）')
 }
 
+async function doKick(actor, deviceRowId) {
+  if (actor.kind !== 'admin') throw new Error('仅管理员可操作')
+  const id = Number(deviceRowId)
+  if (!id) throw new Error('缺少设备记录 id')
+  const rows = await svcGet('login_device', 'select=id,tenant_id,username,device_id&id=eq.' + id)
+  const row = rows[0]
+  if (!row || String(row.tenant_id) !== String(actor.tenant_id)) throw new Error('该设备不属于本租户')
+  await svcDelete('login_device', 'id=eq.' + id)
+  await audit(actor, row.device_id, null, 'kick_device', { username: row.username })
+  return { ok: true }
+}
+
 // ---------- 主入口 ----------
 exports.main = async (event) => {
   let src = event
@@ -224,6 +249,7 @@ exports.main = async (event) => {
       case 'check': return await doCheck(actor, deviceId, ip)
       case 'send_code': return await doSendCode(actor, deviceId, ip)
       case 'verify': return await doVerify(actor, deviceId, String((src && src.code) || ''), ip)
+      case 'kick_device': return await doKick(actor, src.id)
       default: throw new Error('未知操作：' + (action || '(空)'))
     }
   } catch (e) {

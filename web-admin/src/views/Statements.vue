@@ -10,6 +10,7 @@
       <div style="display: flex; gap: 10px; margin-bottom: 12px">
         <el-input v-model="keyword" placeholder="客户名称" clearable style="width: 220px" />
         <el-button type="primary" @click="loadAll">搜索</el-button>
+        <el-button @click="doExport">导出 CSV</el-button>
       </div>
       <el-table :data="filtered" v-loading="loading" border stripe @row-click="(r) => openFlows(r)">
         <el-table-column prop="name" label="客户" min-width="140" />
@@ -108,6 +109,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ledgerApi } from '@/api/services'
+import { exportCsv, todayTag } from '@/utils/exportCsv'
 import { printHtml } from '@/lib/printTemplates'
 
 const loading = ref(false)
@@ -134,6 +136,12 @@ async function loadAll() {
   } finally {
     loading.value = false
   }
+}
+
+function doExport() {
+  const headers = ['客户', '应收累计', '实收累计', '欠款余额']
+  const rows = filtered.value.map((c) => [c.name, c.receivable.toFixed(2), c.received.toFixed(2), c.balance.toFixed(2)])
+  exportCsv('对账汇总_' + todayTag() + '.csv', headers, rows)
 }
 
 async function openFlows(row) {

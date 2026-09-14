@@ -21,6 +21,8 @@ const routes = [
       { path: 'purchase', name: 'purchase', component: () => import('@/views/Purchase.vue'), meta: { title: '采购', icon: 'ShoppingCart' } },
       { path: 'print-center', name: 'printCenter', component: () => import('@/views/PrintCenter.vue'), meta: { title: '打印中心', icon: 'Printer' } },
       { path: 'statements', name: 'statements', component: () => import('@/views/Statements.vue'), meta: { title: '对账', icon: 'Wallet' } },
+      { path: 'security', name: 'security', component: () => import('@/views/Security.vue'), meta: { title: '安全', icon: 'Lock' } },
+      { path: 'oplog', name: 'opLog', component: () => import('@/views/OpLog.vue'), meta: { title: '操作日志', icon: 'Document' } },
       { path: 'settings', name: 'settings', component: () => import('@/views/Settings.vue'), meta: { title: '设置', icon: 'Setting' } },
     ],
   },

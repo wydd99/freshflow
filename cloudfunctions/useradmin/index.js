@@ -176,6 +176,15 @@ exports.main = async (event) => {
         validatePassword(password)
         validatePhone(phone)
 
+        // 套餐配额检查（分级服务 P1）：店家账户数上限
+        const tRows = await pgList('tenant', 'select=quotas&id=eq.' + admin.tenant_id, accessToken, deviceId)
+        const quotas = (tRows[0] && tRows[0].quotas) || {}
+        const limit = Number(quotas.customer_accounts || 0)
+        if (limit > 0) {
+          const cnt = await pgList('customer_user', 'select=id&tenant_id=eq.' + admin.tenant_id, accessToken, deviceId)
+          if (Array.isArray(cnt) && cnt.length >= limit) throw new Error('已达当前套餐的店家账户上限（' + limit + ' 个），升级套餐后可继续开通')
+        }
+
         // 同租户用户名查重（customer_user 唯一约束兜底，先给友好报错）
         const dup = await pgList('customer_user', 'select=id&tenant_id=eq.' + admin.tenant_id + '&username=eq.' + encodeURIComponent(username), accessToken, deviceId)
         if (Array.isArray(dup) && dup.length) throw new Error('用户名已存在，请换一个')

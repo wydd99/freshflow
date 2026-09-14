@@ -1,0 +1,7 @@
+{
+  "envId": "freshflow-ENV_ID",
+  "username": "填写管理员账号（如 merchant_a）",
+  "password": "填写管理员密码",
+  "pollSeconds": 15,
+  "printCommand": ""
+}

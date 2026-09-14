@@ -53,6 +53,8 @@ const menus = computed(() => [
   { path: '/purchase', title: '采购', icon: 'ShoppingCart', key: 'purchase' },
   { path: '/print-center', title: '打印中心', icon: 'Printer' },
   { path: '/statements', title: '对账', icon: 'Wallet' },
+  { path: '/security', title: '安全', icon: 'Lock' },
+  { path: '/oplog', title: '操作日志', icon: 'Document' },
   { path: '/settings', title: '设置', icon: 'Setting' },
 ].filter((m) => !(HIDE_MODULES_FOR.includes(store.actor?.username) && HIDDEN_MODULES.includes(m.key))))
 

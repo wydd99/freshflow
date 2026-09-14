@@ -8,6 +8,7 @@
         <el-input v-model="query.keyword" placeholder="单号 / 客户" clearable style="width: 220px" @keyup.enter="fetchList" @clear="fetchList" />
         <el-button type="primary" @click="fetchList">搜索</el-button>
         <div style="flex: 1" />
+        <el-button @click="doExport">导出 CSV</el-button>
         <el-button type="primary" @click="openCreate">新增订单（后台代录）</el-button>
       </div>
 
@@ -174,6 +175,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   orderApi, customerApi, localToday, SOURCE_LABELS, STATUS_LABELS,
 } from '@/api/services'
+import { exportCsv, todayTag } from '@/utils/exportCsv'
 
 const statusLabels = STATUS_LABELS
 const timeSlots = ['早5:00-7:00', '早5:00-8:00', '早6:00-9:00', '上午', '下午', '当天多次']
@@ -283,6 +285,12 @@ async function doSave() {
   } finally {
     create.saving = false
   }
+}
+
+function doExport() {
+  const headers = ['单号', '客户', '发货日期', '时段', '状态', '来源', '明细行数', '订单金额']
+  const rows = filteredList.value.map((r) => [r.order_no, r.customerName, r.delivery_date, r.time_slot || '', statusLabels[r.status] || r.status, sourceLabels[r.source] || r.source, r.sort_total, Number(r.amountOriginal).toFixed(2)])
+  exportCsv('订单导出_' + todayTag() + '.csv', headers, rows)
 }
 
 async function fetchList() {

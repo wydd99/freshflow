@@ -12,6 +12,7 @@
         </el-select>
         <el-button type="primary" @click="fetchList">搜索</el-button>
         <div style="flex: 1" />
+        <el-button @click="doExport">导出 CSV</el-button>
         <el-button type="primary" @click="openEdit()">新增客户</el-button>
       </div>
 
@@ -229,6 +230,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { customerApi, goodsApi, userAdminApi } from '@/api/services'
+import { exportCsv, todayTag } from '@/utils/exportCsv'
 
 const levels = [
   { value: 'default', label: '默认' },
@@ -276,6 +278,12 @@ async function fetchList() {
   } finally {
     loading.value = false
   }
+}
+
+function doExport() {
+  const headers = ['名称', '等级', '结算方式', '每月结账日', '欠款上限', '超期禁单天数', '商城可见', '子账号数', '备注']
+  const rows = list.value.map((c) => [c.name, levelLabel(c.level), settlementLabel(c), c.settlementDay || '', c.creditLimit || 0, c.overdueDays || '', c.visibleAll ? '全部' : '部分分类', (c.subUsers || []).length, c.remark || ''])
+  exportCsv('客户导出_' + todayTag() + '.csv', headers, rows)
 }
 
 function openEdit(row) {
