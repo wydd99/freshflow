@@ -100,8 +100,8 @@
       </template>
     </el-dialog>
 
-    <!-- 详情弹窗 -->
-    <el-dialog v-model="detail.visible" :title="detail.order ? `订单详情 ${detail.order.order_no}` : ''" width="820px">
+    <!-- 详情弹窗（T3.2：退货 + 售后金额 + 改单留痕时间线） -->
+    <el-dialog v-model="detail.visible" :title="detail.order ? `订单详情 ${detail.order.order_no}` : ''" width="880px">
       <template v-if="detail.order">
         <el-descriptions :column="4" border size="small">
           <el-descriptions-item label="客户">{{ detail.customerName }}</el-descriptions-item>
@@ -110,25 +110,58 @@
           <el-descriptions-item label="时段">{{ detail.order.time_slot || '-' }}</el-descriptions-item>
         </el-descriptions>
         <el-table :data="detail.items" border size="small" style="margin-top: 10px">
-          <el-table-column prop="goods_name" label="品名" min-width="120" />
-          <el-table-column label="下单数量" width="90" align="right">
+          <el-table-column prop="goods_name" label="品名" min-width="110">
+            <template #default="{ row }">
+              {{ row.goods_name }}
+              <el-tag v-if="logCount(row)" size="small" type="info" style="margin-left:4px;cursor:pointer" @click="loadLogs">痕{{ logCount(row) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="下单数量" width="85" align="right">
             <template #default="{ row }">{{ Number(row.order_qty) }} {{ row.unit }}</template>
           </el-table-column>
-          <el-table-column label="单价" width="90" align="right">
+          <el-table-column label="实拣" width="75" align="right">
+            <template #default="{ row }">{{ row.sorted_qty != null ? Number(row.sorted_qty) : '—' }}</template>
+          </el-table-column>
+          <el-table-column label="单价" width="85" align="right">
             <template #default="{ row }">¥{{ row.orderPrice.toFixed(2) }}</template>
           </el-table-column>
-          <el-table-column label="价源" width="70" align="center">
+          <el-table-column label="价源" width="60" align="center">
             <template #default="{ row }"><el-tag size="small" :type="sourceTag(row.price_source)">{{ sourceName(row.price_source) }}</el-tag></template>
           </el-table-column>
-          <el-table-column label="金额" width="100" align="right">
+          <el-table-column label="金额" width="90" align="right">
             <template #default="{ row }">¥{{ row.amount.toFixed(2) }}</template>
           </el-table-column>
-          <el-table-column label="行状态" width="80" align="center">
+          <el-table-column label="行状态" width="76" align="center">
             <template #default="{ row }">{{ itemStatus(row.status) }}</template>
           </el-table-column>
+          <el-table-column label="操作" width="86" align="center">
+            <template #default="{ row }">
+              <el-button v-if="canRefund(row)" link type="warning" size="small" @click="doRefund(row)">退货</el-button>
+            </template>
+          </el-table-column>
         </el-table>
-        <div style="text-align: right; margin-top: 10px">
-          订单金额合计：<b style="font-size: 16px">¥{{ Number(detail.order.amount_original ?? 0).toFixed(2) }}</b>
+        <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 24px; align-items: baseline">
+          <span v-if="Number(detail.order.amount_aftersale) > 0" style="color: #e6a23c">
+            售后累计：¥{{ Number(detail.order.amount_aftersale).toFixed(2) }}
+          </span>
+          <span v-if="Number(detail.order.amount_configured) > 0">
+            配货金额：<b style="font-size: 15px; color: #409eff">¥{{ Number(detail.order.amount_configured).toFixed(2) }}</b>
+          </span>
+          <span>
+            订单金额合计：<b style="font-size: 16px">¥{{ Number(detail.order.amount_original ?? 0).toFixed(2) }}</b>
+          </span>
+        </div>
+
+        <!-- 改单留痕时间线（需求#8） -->
+        <div v-if="detail.logs.length" style="margin-top: 14px">
+          <el-divider content-position="left">改单留痕（{{ detail.logs.length }}）</el-divider>
+          <el-timeline style="padding-left: 4px; max-height: 220px; overflow: auto">
+            <el-timeline-item v-for="(lg, i) in detail.logs" :key="i"
+              :timestamp="fmtTime(lg.at)" :type="lg.f === 'refund' ? 'warning' : 'primary'" size="small">
+              <b>{{ lg.goodsName }}</b>&nbsp;{{ logText(lg) }}
+              <span v-if="lg.reason" style="color: #999">（{{ lg.reason }}）</span>
+            </el-timeline-item>
+          </el-timeline>
         </div>
       </template>
     </el-dialog>
@@ -168,7 +201,7 @@ const create = reactive({
   visible: false, customerId: null, deliveryDate: localToday(),
   timeSlot: '', items: [], saving: false,
 })
-const detail = reactive({ visible: false, order: null, items: [], customerName: '' })
+const detail = reactive({ visible: false, order: null, items: [], customerName: '', logs: [] })
 
 const draftTotal = computed(() =>
   Math.round(create.items.reduce((s, r) => s + r.qty * r.price, 0) * 100) / 100)
@@ -264,14 +297,64 @@ async function fetchList() {
 }
 
 async function openDetail(row) {  try {
-    const { orderApi: oa } = await import('@/api/services')
+    const { orderApi: oa, refundApi } = await import('@/api/services')
     const { order, items } = await oa.getWithItems(row.id)
     detail.order = order
     detail.items = items
     detail.customerName = row.customerName
+    detail.logs = []
     detail.visible = true
+    try { detail.logs = await refundApi.itemLogs(order.id) } catch (e) { /* 留痕读取失败不阻断详情 */ }
   } catch (e) {
     ElMessage.error(String(e?.message || e))
+  }
+}
+
+// ---------- T3.2 退货 + 改单留痕 ----------
+function logCount(row) {
+  return Array.isArray(row.edit_log) ? row.edit_log.length : 0
+}
+function canRefund(row) {
+  const qty = row.sorted_qty != null ? Number(row.sorted_qty) : Number(row.order_qty ?? 0)
+  return qty > 0 && !['void', 'pending'].includes(row.status) && detail.order && !['void', 'draft'].includes(detail.order.status)
+}
+function fmtTime(at) {
+  const d = new Date(at || '')
+  return isNaN(d.getTime()) ? (at || '') : d.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+}
+function logText(lg) {
+  if (lg.f === 'refund') return `退货 ${lg.n}（原 ${lg.o}）→ ¥${Number(lg.amt || 0).toFixed(2)}`
+  if (lg.f) return `${lg.f}: ${lg.o} → ${lg.n}`
+  return JSON.stringify(lg).slice(0, 60)
+}
+async function loadLogs() {
+  if (!detail.order) return
+  try {
+    const { refundApi } = await import('@/api/services')
+    detail.logs = await refundApi.itemLogs(detail.order.id)
+  } catch (e) { /* 同上 */ }
+}
+async function doRefund(row) {
+  const maxQty = Number(row.sorted_qty ?? row.order_qty ?? 0)
+  try {
+    const { value } = await ElMessageBox.prompt(
+      `「${row.goods_name}」当前 ${maxQty} ${row.unit}。输入退货数量（默认整行退）`,
+      '退货确认',
+      { inputValue: String(maxQty), inputPattern: /^\d+(\.\d+)?$/, inputErrorMessage: '请输入有效数量', type: 'warning' },
+    )
+    const qty = Math.min(Number(value), maxQty)
+    let reason = ''
+    try {
+      const r2 = await ElMessageBox.prompt('退货原因（选填，会记入留痕）', '原因', { inputValue: '', type: 'info' })
+      reason = (r2.value || '').trim()
+    } catch { /* 取消原因输入 = 空原因 */ }
+    const { refundApi } = await import('@/api/services')
+    const res = await refundApi.refundItem(detail.order, row, { qty, reason })
+    ElMessage.success(`已退货 ${row.goods_name} ${res.refundQty} ${row.unit}，冲减 ¥${res.refundAmount.toFixed(2)}` + (['shipped', 'done'].includes(detail.order.status) ? '（欠款已同步冲减）' : ''))
+    openDetail({ id: detail.order.id, customerName: detail.customerName })
+    fetchList()
+  } catch (e) {
+    if (e !== 'cancel' && e !== 'close') ElMessage.error(String(e?.message || e))
   }
 }
 

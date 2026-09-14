@@ -89,6 +89,34 @@
           </el-select>
         </el-form-item>
         <el-form-item label="备注"><el-input v-model="dlg.form.remark" /></el-form-item>
+
+        <!-- 收货地址多行管理（T1.5 余项）：仅编辑已有客户时显示 -->
+        <el-form-item v-if="dlg.form.id" label="收货地址">
+          <div style="width: 100%">
+            <el-table :data="dlg.addresses" border size="small" v-loading="dlg.addrLoading">
+              <el-table-column prop="contact" label="联系人" width="90" />
+              <el-table-column prop="phone" label="电话" width="120" />
+              <el-table-column prop="address" label="地址" min-width="180" />
+              <el-table-column label="默认" width="60" align="center">
+                <template #default="{ row }">
+                  <el-tag v-if="row.is_default" size="small" type="success">默认</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="150" align="center">
+                <template #default="{ row, $index }">
+                  <el-button link type="primary" size="small" @click="addrSetDefault(row)">设默认</el-button>
+                  <el-button link type="danger" size="small" @click="addrRemove(row)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div style="margin-top: 8px; display: flex; gap: 8px">
+              <el-input v-model="dlg.newAddr.contact" placeholder="联系人" style="width: 100px" size="small" />
+              <el-input v-model="dlg.newAddr.phone" placeholder="电话" style="width: 130px" size="small" />
+              <el-input v-model="dlg.newAddr.address" placeholder="收货地址（如：蜀山区XX路XX号后门）" size="small" />
+              <el-button size="small" @click="addrAdd">添加</el-button>
+            </div>
+          </div>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dlg.visible = false">取消</el-button>
@@ -189,7 +217,7 @@ const loading = ref(false)
 const list = ref([])
 const categories = ref([])
 const query = reactive({ keyword: '', level: '' })
-const dlg = reactive({ visible: false, form: {} })
+const dlg = reactive({ visible: false, form: {}, addresses: [], addrLoading: false, newAddr: { contact: '', phone: '', address: '' } })
 
 // 子账号管理状态（T2.13）
 const sub = reactive({ visible: false, customer: null, users: [] })
@@ -230,6 +258,56 @@ function openEdit(row) {
     ? { ...row, visibleCategories: row.visibleCategories || [] }
     : { name: '', level: 'default', settlementType: 'daily', settlementDay: null, creditLimit: 0, overdueDays: 30, visibleAll: true, visibleCategories: [], status: 'active', remark: '' }
   dlg.visible = true
+  dlg.addresses = []
+  dlg.newAddr = { contact: '', phone: '', address: '' }
+  if (row?.id) loadAddresses(row.id)
+}
+
+// ---------- 收货地址多行管理（T1.5 余项） ----------
+async function loadAddresses(customerId) {
+  dlg.addrLoading = true
+  try {
+    const { addressApi } = await import('@/api/services')
+    dlg.addresses = await addressApi.listByCustomer(customerId)
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  } finally {
+    dlg.addrLoading = false
+  }
+}
+async function addrAdd() {
+  if (!dlg.form.id) return
+  if (!dlg.newAddr.address?.trim()) return ElMessage.warning('地址不能为空')
+  try {
+    const { addressApi } = await import('@/api/services')
+    const isFirst = dlg.addresses.length === 0
+    await addressApi.save({ customer_id: dlg.form.id, ...dlg.newAddr, is_default: isFirst })
+    ElMessage.success('地址已添加')
+    dlg.newAddr = { contact: '', phone: '', address: '' }
+    loadAddresses(dlg.form.id)
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  }
+}
+async function addrSetDefault(row) {
+  try {
+    const { addressApi } = await import('@/api/services')
+    await addressApi.save({ ...row, is_default: true })
+    loadAddresses(dlg.form.id)
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  }
+}
+async function addrRemove(row) {
+  await ElMessageBox.confirm(`确认删除该地址？「${row.address}」`, '删除确认', { type: 'warning' })
+  try {
+    const { addressApi } = await import('@/api/services')
+    await addressApi.remove(row.id)
+    ElMessage.success('已删除')
+    loadAddresses(dlg.form.id)
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  }
 }
 
 async function doSave() {

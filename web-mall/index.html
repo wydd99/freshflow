@@ -77,6 +77,13 @@
   .dprice { color: #e64340; font-size: 22px; font-weight: 700; margin-right: auto; }
   .dbuy { background: #1f9d55; color: #fff; border: none; border-radius: 20px; padding: 9px 22px; font-size: 15px; cursor: pointer; }
   .dbuy:disabled { background: #c8c8c8; }
+  /* 截单提示（商城观感升级） */
+  .cutoff { margin: 8px 12px 0; padding: 8px 12px; background: #fff7e6; color: #b26a00; border-radius: 10px; font-size: 13px; border: 1px solid #ffe1b3; display: none; }
+  .cutoff.on { display: block; }
+  .cutoff.past { background: #fff1f0; color: #c0392b; border-color: #ffccc7; }
+  .modal-addr { margin: 8px 0 2px; }
+  .modal-addr select { width: 100%; padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; background: #fafafa; color: #333; }
+  .maddr-hint { font-size: 12px; color: #999; margin-bottom: 4px; }
   /* 确认下单弹窗 */
   .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 20; display: flex; align-items: center; justify-content: center; }
   .modal { background: #fff; border-radius: 14px; width: 86%; max-width: 400px; padding: 20px; }
@@ -121,6 +128,7 @@
   </header>
 
   <div id="view-goods">
+    <div id="cutoff" class="cutoff"></div>
     <div class="cats" id="cats"></div>
     <div class="goods" id="goods"></div>
     <div class="cartbar" id="cartbar">
@@ -143,6 +151,7 @@
     <div class="modal">
       <h3>确认下单 <span id="modal-date" style="font-size:13px;color:#888;font-weight:400"></span></h3>
       <div id="modal-lines"></div>
+      <div id="modal-addr" class="modal-addr"></div>
       <div class="mbtns">
         <button class="mcancel" onclick="closeModal()">取消</button>
         <button class="mok" onclick="submitOrder()">确认下单</button>
@@ -299,6 +308,15 @@ function doLogout() {
 
 /* ---------- 主界面 ---------- */
 let customer = null, categories = [], allGoods = [], cart = {}, view = 'goods'
+let customerAddrs = []
+const CUTOFF_HOUR = 20 // 每日截单时间（24h，商城展示用）
+
+function cutoffInfo() {
+  const past = new Date().getHours() >= CUTOFF_HOUR
+  return { past: past, tip: past
+    ? ("今日已过截单时间（" + CUTOFF_HOUR + ":00），最早可送 " + localToday(2) + "，如有急单请联系配送站")
+    : ("今日 " + CUTOFF_HOUR + ":00 截单 · 现在下单最早可送 " + localToday(1)) }
+}
 
 function switchView(v) {
   view = v
@@ -314,11 +332,20 @@ async function enterMain() {
   document.getElementById('main').classList.remove('hide')
   // 下拉日期 今天/明天
   const dd = document.getElementById('dd')
-  dd.innerHTML = `<option value="${localToday(0)}">今天 ${localToday(0)}</option><option value="${localToday(1)}">明天 ${localToday(1)}</option>`
+  const ci = cutoffInfo()
+  var ddHtml = ci.past ? "" : `<option value="${localToday(0)}">今天 ${localToday(0)}</option>`
+  ddHtml += `<option value="${localToday(1)}">明天 ${localToday(1)}</option>`
+  ddHtml += `<option value="${localToday(2)}">后天 ${localToday(2)}</option>`
+  dd.innerHTML = ddHtml
+  const ctEl = document.getElementById('cutoff')
+  ctEl.textContent = ci.tip
+  ctEl.classList.add('on')
+  ctEl.classList.toggle('past', ci.past)
   const cu = (await rest('customer_user', `select=customer_id&uid=eq.${sub()}`)) || []
   const cRows = (await rest('customer', `select=*&id=eq.${(cu[0] || {}).customer_id}`)) || []
   customer = cRows[0] || {}
   document.getElementById('hello').textContent = customer.name || '客户'
+  customerAddrs = (await rest('customer_address', 'select=*&customer_id=eq.' + customer.id + '&order=is_default.desc,id')) || []
   categories = (await rest('goods_category', 'select=*&order=sort')) || []
   const goodsRows = (await rest('goods', 'select=*&status=eq.active&order=code')) || []
   let visible = null
@@ -462,12 +489,40 @@ function confirmOrder() {
   document.getElementById('modal-lines').innerHTML =
     lines.map((l) => `<div class="mline">${l}</div>`).join('') +
     `<div class="mtotal">合计 ¥${pendingOrder.total.toFixed(2)}</div>`
+  renderModalAddr()
   document.getElementById('modal').classList.remove('hide')
+}
+
+function renderModalAddr() {
+  const el = document.getElementById('modal-addr')
+  if (!customerAddrs.length) {
+    el.innerHTML = '<div class="maddr-hint">暂无收货地址（可联系配送站添加）</div>'
+    return
+  }
+  var html = '<div class="maddr-hint">收货地址</div><select id="addr-sel">'
+  for (var i = 0; i < customerAddrs.length; i++) {
+    var a = customerAddrs[i]
+    var label = ((a.contact || "") + " " + (a.phone || "") + " " + a.address).trim()
+    html += '<option value="' + a.id + '"' + (a.is_default ? ' selected' : '') + '>' + label + '</option>'
+  }
+  html += '</select>'
+  el.innerHTML = html
 }
 
 function closeModal() {
   document.getElementById('modal').classList.add('hide')
   pendingOrder = null
+}
+
+function addrSuffix() {
+  try {
+    const sel = document.getElementById('addr-sel')
+    if (!sel || !customerAddrs.length) return ''
+    const a = customerAddrs.find((x) => String(x.id) === sel.value)
+    if (!a) return ''
+    const parts = [a.contact, a.phone, a.address].filter(Boolean).join(' ')
+    return parts ? ' | 收货：' + parts : ''
+  } catch (e) { return '' }
 }
 
 async function submitOrder() {
@@ -481,7 +536,7 @@ async function submitOrder() {
     const created = await insert('order_main', {
       tenant_id: customer.tenant_id, order_no: orderNo, customer_id: customer.id,
       source: 'mall', delivery_date: dd, status: 'draft',
-      amount_original: total, sort_total: items.length, remark: '网页商城自下单',
+      amount_original: total, sort_total: items.length, remark: '网页商城自下单' + addrSuffix(),
     })
     let order = Array.isArray(created) ? created[0] : created
     if (!order || !order.id) {
