@@ -1,0 +1,14 @@
+{
+  "version": "2.0",
+  "envId": "freshflow-ENV_ID",
+  "functions": [
+    {
+      "name": "useradmin",
+      "timeout": 30,
+      "runtime": "Nodejs18.15",
+      "installDependency": false,
+      "handler": "index.main"
+    }
+  ],
+  "$comment": "ai 函数由 MCP/控制台通道维护（Key 在云端环境变量），勿从此处部署覆盖"
+}

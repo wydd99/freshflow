@@ -1,0 +1,5 @@
+{
+  "name": "useradmin",
+  "version": "0.1.0",
+  "description": "FreshFlow 管理边界：租户管理员自助开子账号/重置密码（T2.13）"
+}

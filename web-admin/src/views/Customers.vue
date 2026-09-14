@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-alert type="success" :closable="false" style="margin-bottom: 12px"
-      title="已连接 CloudBase PostgreSQL，数据实时保存（RLS 按租户隔离）；子账号管理与收货地址多行管理在 T1.5 收尾交付" />
+      title="已连接 CloudBase PostgreSQL，数据实时保存（RLS 按租户隔离）" />
 
     <el-card shadow="never">
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px">
@@ -36,9 +36,16 @@
             <el-tag :type="row.visibleAll ? 'success' : 'info'" size="small">{{ row.visibleAll ? '全部' : '部分分类' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" min-width="100" />
-        <el-table-column label="操作" width="130" align="center">
+        <el-table-column label="子账号" width="80" align="center">
           <template #default="{ row }">
+            <el-tag v-if="row.subUsers && row.subUsers.length" size="small" type="success">{{ row.subUsers.length }}</el-tag>
+            <span v-else style="color: #c0c4cc">—</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="remark" label="备注" min-width="100" />
+        <el-table-column label="操作" width="190" align="center" fixed="right">
+          <template #default="{ row }">
+            <el-button link type="primary" @click="openSubUsers(row)">子账号</el-button>
             <el-button link type="primary" @click="openEdit(row)">编辑</el-button>
             <el-button link type="danger" @click="doRemove(row)">删除</el-button>
           </template>
@@ -88,13 +95,88 @@
         <el-button type="primary" @click="doSave">保存</el-button>
       </template>
     </el-dialog>
+
+    <!-- 子账号管理（T2.13） -->
+    <el-dialog v-model="sub.visible" :title="`子账号管理 · ${sub.customer?.name || ''}`" width="720px">
+      <el-alert v-if="sub.users.length >= 3" type="warning" :closable="false" style="margin-bottom: 12px"
+        title="体验版套餐 Auth 用户数上限 3 个（全租户共享），新开账号需升级套餐或清理停用账号" />
+      <div style="margin-bottom: 12px">
+        <el-button type="primary" size="small" @click="openSubCreate">开通新子账号</el-button>
+        <span class="hint">账号开通后店家即可用它在商城（网页/小程序）登录下单</span>
+      </div>
+      <el-table :data="sub.users" border size="small">
+        <el-table-column prop="username" label="账号" width="140" />
+        <el-table-column prop="display_name" label="名称" min-width="120" />
+        <el-table-column label="状态" width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 'active' ? 'success' : 'danger'" size="small">
+              {{ row.status === 'active' ? '正常' : '已停用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="240" align="center">
+          <template #default="{ row }">
+            <el-button link type="primary" size="small" @click="openResetPwd(row)">重置密码</el-button>
+            <el-button link size="small" :type="row.status === 'active' ? 'warning' : 'success'" @click="doToggle(row)">
+              {{ row.status === 'active' ? '停用' : '启用' }}
+            </el-button>
+            <el-button link type="danger" size="small" @click="doUnbind(row)">解绑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div v-if="!sub.users.length" style="color: #999; padding: 20px 0; text-align: center">
+        该客户还没有子账号，点上方「开通新子账号」给店家开一个
+      </div>
+    </el-dialog>
+
+    <!-- 开通子账号 -->
+    <el-dialog v-model="createDlg.visible" title="开通新子账号" width="480px" append-to-body>
+      <el-form :model="createDlg.form" label-width="90px">
+        <el-form-item label="登录账号" required>
+          <el-input v-model="createDlg.form.username" placeholder="字母或数字开头，2-48 位，不支持中文" />
+        </el-form-item>
+        <el-form-item label="初始密码" required>
+          <el-input v-model="createDlg.form.password" show-password placeholder="8-32 位，含大写/小写/数字/特殊字符至少 3 类" />
+        </el-form-item>
+        <el-form-item label="名称">
+          <el-input v-model="createDlg.form.displayName" placeholder="店家称呼，如：客户甲-张姐" />
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="createDlg.form.phone" placeholder="选填，11 位" />
+        </el-form-item>
+        <el-form-item label="导出对账单">
+          <el-switch v-model="createDlg.form.canExport" />
+          <span class="hint">允许店家在商城导出自己的对账单 CSV（需求#9）</span>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="createDlg.visible = false">取消</el-button>
+        <el-button type="primary" :loading="createDlg.loading" @click="doCreateSub">开通</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 重置密码 -->
+    <el-dialog v-model="pwdDlg.visible" title="重置密码" width="420px" append-to-body>
+      <el-form label-width="90px">
+        <el-form-item label="账号">
+          <span>{{ pwdDlg.row?.username }}</span>
+        </el-form-item>
+        <el-form-item label="新密码" required>
+          <el-input v-model="pwdDlg.password" show-password placeholder="8-32 位，含大写/小写/数字/特殊字符至少 3 类" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="pwdDlg.visible = false">取消</el-button>
+        <el-button type="primary" :loading="pwdDlg.loading" @click="doResetPwd">确认重置</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { customerApi, goodsApi } from '@/api/services'
+import { customerApi, goodsApi, userAdminApi } from '@/api/services'
 
 const levels = [
   { value: 'default', label: '默认' },
@@ -109,6 +191,11 @@ const categories = ref([])
 const query = reactive({ keyword: '', level: '' })
 const dlg = reactive({ visible: false, form: {} })
 
+// 子账号管理状态（T2.13）
+const sub = reactive({ visible: false, customer: null, users: [] })
+const createDlg = reactive({ visible: false, loading: false, form: {} })
+const pwdDlg = reactive({ visible: false, loading: false, row: null, password: '' })
+
 function levelLabel(v) { return levels.find((l) => l.value === v)?.label || v }
 function levelTag(v) { return { A: 'danger', B: 'warning', C: 'info', default: '' }[v] || '' }
 function settlementLabel(row) {
@@ -119,6 +206,18 @@ async function fetchList() {
   loading.value = true
   try {
     list.value = await customerApi.list({ ...query })
+    // 附带子账号概览（customer_user 全量在租户内可见，RLS 保证）
+    const { db } = await import('@/lib/cloudbase')
+    const res = await db.from('customer_user').select('id,username,display_name,status,customer_id')
+    const rows = res?.data ?? res
+    if (Array.isArray(rows)) {
+      const byCustomer = new Map()
+      for (const r of rows) {
+        if (!byCustomer.has(r.customer_id)) byCustomer.set(r.customer_id, [])
+        byCustomer.get(r.customer_id).push(r)
+      }
+      list.value = list.value.map((c) => ({ ...c, subUsers: byCustomer.get(c.id) || [] }))
+    }
   } catch (e) {
     ElMessage.error(String(e?.message || e))
   } finally {
@@ -146,6 +245,87 @@ async function doRemove(row) {
   await customerApi.remove(row.id)
   ElMessage.success('已删除')
   fetchList()
+}
+
+// ---------- 子账号管理（T2.13） ----------
+function openSubUsers(row) {
+  sub.customer = row
+  sub.users = (row.subUsers || []).map((u) => ({ ...u }))
+  sub.visible = true
+}
+
+function openSubCreate() {
+  createDlg.form = { username: '', password: '', displayName: '', phone: '', canExport: false }
+  createDlg.visible = true
+}
+
+async function doCreateSub() {
+  const f = createDlg.form
+  if (!f.username || !f.password) return ElMessage.warning('账号和密码必填')
+  createDlg.loading = true
+  try {
+    await userAdminApi.createSubUser({ ...f, customerId: sub.customer.id })
+    ElMessage.success(`子账号「${f.username}」已开通，店家可用它登录商城下单`)
+    createDlg.visible = false
+    await fetchList()
+    const fresh = list.value.find((c) => c.id === sub.customer.id)
+    if (fresh) sub.users = (fresh.subUsers || []).map((u) => ({ ...u }))
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  } finally {
+    createDlg.loading = false
+  }
+}
+
+function openResetPwd(row) {
+  pwdDlg.row = row
+  pwdDlg.password = ''
+  pwdDlg.visible = true
+}
+
+async function doResetPwd() {
+  if (!pwdDlg.password) return ElMessage.warning('请输入新密码')
+  pwdDlg.loading = true
+  try {
+    await userAdminApi.resetPassword(pwdDlg.row.uid, pwdDlg.password)
+    ElMessage.success(`「${pwdDlg.row.username}」密码已重置`)
+    pwdDlg.visible = false
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  } finally {
+    pwdDlg.loading = false
+  }
+}
+
+async function doToggle(row) {
+  const blocking = row.status === 'active'
+  await ElMessageBox.confirm(
+    blocking ? `确认停用「${row.username}」？停用后店家将无法登录商城` : `确认启用「${row.username}」？`,
+    blocking ? '停用确认' : '启用确认', { type: 'warning' },
+  )
+  try {
+    await userAdminApi.setStatus(row.uid, blocking)
+    row.status = blocking ? 'blocked' : 'active'
+    ElMessage.success(blocking ? '已停用' : '已启用')
+    fetchList()
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  }
+}
+
+async function doUnbind(row) {
+  await ElMessageBox.confirm(
+    `确认解绑「${row.username}」？解绑后该账号无法登录商城；Auth 用户保留，之后可重新绑定`,
+    '解绑确认', { type: 'warning' },
+  )
+  try {
+    await userAdminApi.unbind(row.uid)
+    sub.users = sub.users.filter((u) => u.uid !== row.uid)
+    ElMessage.success('已解绑')
+    fetchList()
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  }
 }
 
 onMounted(async () => {

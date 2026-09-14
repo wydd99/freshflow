@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FreshFlow 数据服务层 —— 真实实现（CloudBase PG app.rdb()，postgREST 风格）
  * 多租户隔离由数据库 RLS 强制（见 database/migrations/20260910180000）；
  * 本层职责：snake_case ↔ 页面字段映射、分类名↔id 转换、错误统一抛出。
@@ -815,3 +815,5 @@ export const inventoryApi = {
     })
   },
 }
+
+export { userAdminApi } from './userAdminApi'
