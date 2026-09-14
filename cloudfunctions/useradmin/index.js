@@ -190,6 +190,7 @@ exports.main = async (event) => {
         if (Array.isArray(dup) && dup.length) throw new Error('用户名已存在，请换一个')
 
         // 1) 管理面建 Auth 用户（密码规则平台侧强制）
+        // Type=externalUser：店家顾客属外部用户，不占套餐 internalUser 3 个名额（9/15 定稿口径）
         const resp = await tcbRequest('CreateUser', {
           EnvId: ENV_ID,
           Name: username,
@@ -197,6 +198,7 @@ exports.main = async (event) => {
           NickName: displayName || username,
           ...(phone ? { Phone: phone } : {}),
           Description: 'FreshFlow sub user (self-service)',
+          Type: 'externalUser',
         })
         const uid = (resp && resp.Data && resp.Data.Uid) || (resp && resp.Uid)
         if (!uid) throw new Error('平台未返回用户 uid，请稍后重试或联系运维')
