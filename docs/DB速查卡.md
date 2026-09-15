@@ -55,3 +55,32 @@ GROUP BY c.name ORDER BY 欠款 DESC;
 - 控制台 SQL 编辑器与管理通道数据一致（订单 0/商品 8/客户 5/管理员 2 双向核对过）；
 - admin_user 两行均为自己人（merchant_a=boss 业务号；administrator=腾讯账号内置超管映射）；
 - 共享集群无公网直连、无内网地址，数据库角色页三系统账号勿动。
+
+## 六、按 Uid 反查账号身份（维护常用 · 9/15 增）
+
+场景：在腾讯云「身份认证」控制台看到某个用户，想知道它是商家还是顾客、挂在哪个商家下。
+⚠️ 控制台列表的「用户 ID」列 ≠ 真实 Uid（真实 Uid 在用户详情里，或系统后台「平台管理→账号总览」的 Uid 列）。
+
+```sql
+SELECT '商家/员工' AS 类型, u.username AS 登录名, u.display_name AS 显示名,
+       t.name AS 所属商家, u.role AS 角色
+FROM admin_user u JOIN tenant t ON t.id = u.tenant_id
+WHERE u.uid = '填Uid'
+UNION ALL
+SELECT '顾客', cu.username, cu.display_name, t.name AS 所属商家, c.name AS 所属客户
+FROM customer_user cu JOIN tenant t ON t.id = cu.tenant_id JOIN customer c ON c.id = cu.customer_id
+WHERE cu.uid = '填Uid';
+```
+
+全平台账号总览（不带参数版，= 后台「平台管理→账号总览」的数据源）：
+
+```sql
+SELECT '商家/员工' AS 类型, u.username, t.name AS 所属商家, u.role
+FROM admin_user u JOIN tenant t ON t.id = u.tenant_id
+UNION ALL
+SELECT '顾客', cu.username, t.name AS 所属商家, c.name AS 所属客户
+FROM customer_user cu JOIN tenant t ON t.id = cu.tenant_id JOIN customer c ON c.id = cu.customer_id
+ORDER BY 1, 2;
+```
+
+维护纪律：①建号昵称必须写业务名（勿用户名当昵称）；②Description 统一格式 `FF·商家·某某` / `FF·顾客·某店@某商家`（平台实际限 64 字符）；③日常维护优先用系统后台「账号总览」，控制台只在重置密码/封禁/删除时用。
