@@ -5,8 +5,9 @@
       title="当前账号不是平台方（不在 PLATFORM_UIDS 名单内），无法查看平台后台。如需访问请联系系统管理员配置。" />
     <template v-else>
       <div style="margin-bottom: 12px; display: flex; gap: 10px; align-items: center">
+        <el-button type="primary" @click="dlg.visible = true">新建租户</el-button>
         <el-button @click="activeTab === 'accounts' ? loadAccounts() : load()">刷新</el-button>
-        <span class="hint">平台总后台（T3.4）：所有租户与账号的全平台视图。</span>
+        <span class="hint">平台总后台（T3.4）：所有租户与账号的全平台视图。新建租户=运维专属操作。</span>
       </div>
       <el-tabs v-model="activeTab" @tab-change="(t) => (t === 'accounts' && !accounts.length ? loadAccounts() : null)">
         <el-tab-pane label="租户一览" name="tenants">
@@ -82,12 +83,37 @@
           </el-table>
         </el-tab-pane>
       </el-tabs>
+
+      <el-dialog v-model="dlg.visible" title="新建租户向导（运维专属）" width="460px">
+        <el-form label-width="110px">
+          <el-form-item label="商家名称">
+            <el-input v-model="dlg.name" placeholder="如：示例商家B（租户显示名）" maxlength="40" />
+          </el-form-item>
+          <el-form-item label="管理员账号">
+            <el-input v-model="dlg.username" placeholder="字母开头，2-48 位，仅字母数字 . _ -" />
+          </el-form-item>
+          <el-form-item label="初始密码">
+            <el-input v-model="dlg.password" type="password" show-password placeholder="8-32 位，含大写/小写/数字中至少 3 类" />
+          </el-form-item>
+          <el-form-item label="安全模式">
+            <el-switch v-model="dlg.phoneVerify" active-text="开" inactive-text="关" />
+            <div class="hint" style="line-height:1.5">开=顾客新设备登录需短信验证（安全套餐卖点）；关=基础模式（账号密码直接登录）。创建后可改。</div>
+          </el-form-item>
+          <el-form-item label="商品分类种子">
+            <el-switch v-model="dlg.seed" active-text="复制标准分类" inactive-text="空白起步" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <el-button @click="dlg.visible = false">取消</el-button>
+          <el-button type="primary" :loading="dlg.saving" @click="createTenant">一键创建</el-button>
+        </template>
+      </el-dialog>
     </template>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { auth, CLOUDBASE_ENV_ID } from '@/lib/cloudbase'
 
@@ -100,6 +126,7 @@ const loading = ref(false)
 const activeTab = ref('tenants')
 const accounts = ref([])
 const loadingAccounts = ref(false)
+const dlg = reactive({ visible: false, name: '', username: '', password: '', phoneVerify: true, seed: true, saving: false })
 
 function planName(p) {
   return { trial: '试用', basic: '基础', pro: '专业', white: '白牌' }[p] || p
@@ -137,6 +164,25 @@ async function loadAccounts() {
     ElMessage.error(String(e?.message || e))
   } finally {
     loadingAccounts.value = false
+  }
+}
+async function createTenant() {
+  if (!dlg.name.trim() || !dlg.username.trim() || !dlg.password) return ElMessage.warning('请填完整')
+  dlg.saving = true
+  try {
+    const res = await call('create_tenant', {
+      name: dlg.name.trim(), username: dlg.username.trim(), password: dlg.password,
+      phone_verify: dlg.phoneVerify, seed: dlg.seed,
+    })
+    if (!res.ok) throw new Error(res.error || '创建失败')
+    ElMessage.success(`租户「${res.name}」已创建，管理员 ${res.username} 可立即登录后台`)
+    dlg.visible = false
+    dlg.name = ''; dlg.username = ''; dlg.password = ''; dlg.phoneVerify = true; dlg.seed = true
+    load()
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  } finally {
+    dlg.saving = false
   }
 }
 async function toggle(row) {
