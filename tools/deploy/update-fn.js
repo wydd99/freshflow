@@ -1,12 +1,13 @@
-// Update deployed useradmin code (zip base64 via SCF UpdateFunctionCode)
+// Update deployed cloud function code (zip base64 via SCF UpdateFunctionCode)
+// 用法：node update-fn.js [FN] [SRC]   （缺省更新 useradmin；例：node update-fn.js platform D:/FreshFlow/cloudfunctions/platform）
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const crypto = require('crypto')
 
 const ENV = 'freshflow-ENV_ID'
-const FN = 'useradmin'
-const SRC = 'D:/FreshFlow/cloudfunctions/useradmin'
+const FN = process.argv[2] || 'useradmin'
+const SRC = process.argv[3] || `D:/FreshFlow/cloudfunctions/${FN}`
 const auth = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.config', '.cloudbase', 'auth.json'), 'utf8')).credential
 
 function crc32(buf) {

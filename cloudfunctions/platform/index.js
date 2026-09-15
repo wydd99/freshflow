@@ -81,6 +81,36 @@ exports.main = async (event) => {
       return { ok: true, tenants: out }
     }
 
+    // 账号总览：全平台账号清单（商家/员工 + 顾客），标注所属租户与客户——平台方直观对账用
+    if (action === 'list_accounts') {
+      const [admins, custUsers, customers, tenants] = await Promise.all([
+        svcGet('admin_user', 'select=id,tenant_id,username,display_name,role,status,uid&order=id'),
+        svcGet('customer_user', 'select=id,tenant_id,username,display_name,customer_id,status,uid&order=id'),
+        svcGet('customer', 'select=id,tenant_id,name,level&order=id'),
+        svcGet('tenant', 'select=id,name'),
+      ])
+      const tMap = new Map(tenants.map((t) => [t.id, t]))
+      const cMap = new Map(customers.map((c) => [c.id, c]))
+      const accounts = [
+        ...admins.map((a) => ({
+          kind: '商家/员工', username: a.username, display: a.display_name || a.username,
+          role: a.role || '', tenant_id: a.tenant_id,
+          tenant: (tMap.get(a.tenant_id) || {}).name || String(a.tenant_id),
+          customer: '', status: a.status || '', uid: a.uid || '',
+        })),
+        ...custUsers.map((c) => {
+          const cu = cMap.get(c.customer_id) || {}
+          return {
+            kind: '顾客', username: c.username, display: c.display_name || cu.name || c.username,
+            role: 'customer', tenant_id: c.tenant_id,
+            tenant: (tMap.get(c.tenant_id) || {}).name || String(c.tenant_id),
+            customer: cu.name || String(c.customer_id), status: c.status || '', uid: c.uid || '',
+          }
+        }),
+      ]
+      return { ok: true, accounts }
+    }
+
     if (action === 'set_status') {
       const tid = Number(src.id)
       const st = String(src.status || '')
