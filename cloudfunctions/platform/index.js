@@ -83,6 +83,13 @@ async function svcPatch(table, query, body) {
   if (!r.ok) throw new Error('svc 更新 ' + table + ' HTTP ' + r.status)
   return true
 }
+async function svcDelete(table, query) {
+  const r = await fetch(GW + '/v1/rdb/rest/' + table + '?' + query, { method: 'DELETE', headers: svcHeaders() })
+  if (!r.ok) throw new Error('svc 删除 ' + table + ' HTTP ' + r.status)
+  return true
+}
+// 北京时间今天（云函数默认 UTC，+8 偏移后取日期——toISOString 直用会差一天的已知坑）
+function bjToday() { return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10) }
 
 async function resolveCaller(accessToken) {
   if (!accessToken) throw new Error('未登录（缺少 access_token）')
@@ -240,6 +247,137 @@ exports.main = async (event) => {
         try { await svcPatch('tenant', 'id=eq.' + tenant.id, { status: 'suspended' }) } catch (e2) { /* 忽略 */ }
         throw new Error('建租户中途失败已停用残留租户（id=' + tenant.id + '）：' + String((e && e.message) || e))
       }
+    }
+
+    // ===== 平台代维护（U6）：替商家录商品/客户/价格——service_key 特权写 + 每笔强制 op_log 留痕 =====
+    // 安全边界：仅平台白名单（外层已校验）；只写业务字段白名单；不提供删除（商品/客户可停用，价格历史留痕）。
+    if (action === 'maintain') {
+      const sub = String(src.sub || '')
+      const tid = Number(src.tenant_id)
+      if (!tid) throw new Error('缺少租户（tenant_id）')
+      const tRows = await svcGet('tenant', 'select=id,name&id=eq.' + tid)
+      if (!Array.isArray(tRows) || !tRows.length) throw new Error('租户不存在：' + tid)
+      const tName = tRows[0].name
+
+      // 代维护留痕（谁·何时·替哪家·录了什么）；失败不阻断主流程
+      const mlog = (op, entity, entityId, detail) => svcInsert('op_log', {
+        tenant_id: tid, actor_type: 'platform', action: 'maintain_' + op,
+        entity: entity || null, entity_id: entityId || null,
+        detail: Object.assign({ by: caller.username, tenant_name: tName }, detail || {}),
+      }).catch(() => {})
+
+      // 商品自动编码：租户内最大编码+1（与商家后台 nextGoodsCode 同口径）
+      const nextGoodsCode = async () => {
+        const rows = await svcGet('goods', 'select=code&tenant_id=eq.' + tid + '&order=code.desc&limit=1')
+        const max = rows[0] && rows[0].code
+        if (!max) return '0110010001'
+        const n = Number(max)
+        return Number.isNaN(n) ? String(Date.now()).slice(-10) : String(n + 1).padStart(10, '0')
+      }
+      // 分类按名解析（查无即建，代录场景商家常口述分类名）
+      const resolveCategory = async (name) => {
+        if (!name) return null
+        const hit = await svcGet('goods_category', 'select=id&tenant_id=eq.' + tid + '&name=eq.' + encodeURIComponent(name))
+        if (hit.length) return hit[0].id
+        const created = await svcInsert('goods_category', { tenant_id: tid, name, sort: 99 })
+        return ((Array.isArray(created) ? created[0] : created) || {}).id || null
+      }
+
+      if (sub === 'list_goods') {
+        const [goods, cats] = await Promise.all([
+          svcGet('goods', 'select=*&tenant_id=eq.' + tid + '&order=id'),
+          svcGet('goods_category', 'select=*&tenant_id=eq.' + tid + '&order=sort'),
+        ])
+        return { ok: true, goods, categories: cats }
+      }
+
+      if (sub === 'save_goods') {
+        const name = String(src.name || '').trim()
+        if (!name) throw new Error('品名必填')
+        const payload = {
+          code: String(src.code || '').trim() || await nextGoodsCode(),
+          name,
+          alias: Array.isArray(src.alias) ? src.alias : String(src.alias || '').split(/[;；,，]/).map((s) => s.trim()).filter(Boolean),
+          category_id: await resolveCategory(String(src.category || '').trim()),
+          unit: String(src.unit || '').trim() || '斤',
+          weigh_type: String(src.weigh_type || 'weight'),
+          base_price: Number(src.base_price || 0),
+          allow_mall: src.allow_mall !== false,
+          status: String(src.status || 'active'),
+          spec: String(src.spec || '').trim() || null,
+          description: String(src.description || '').trim() || null,
+          barcode: String(src.barcode || '').trim() || null,
+        }
+        if (src.id) {
+          await svcPatch('goods', 'id=eq.' + Number(src.id), payload)
+          await mlog('update_goods', 'goods', Number(src.id), { name: payload.name, code: payload.code })
+          return { ok: true, id: Number(src.id), mode: 'updated' }
+        }
+        const rows = await svcInsert('goods', Object.assign({ tenant_id: tid }, payload))
+        const row = (Array.isArray(rows) ? rows[0] : rows) || {}
+        await mlog('create_goods', 'goods', row.id, { name: payload.name, code: payload.code })
+        return { ok: true, id: row.id, mode: 'created', code: payload.code }
+      }
+
+      if (sub === 'list_customers') {
+        const customers = await svcGet('customer', 'select=*&tenant_id=eq.' + tid + '&order=id')
+        return { ok: true, customers }
+      }
+
+      if (sub === 'save_customer') {
+        const name = String(src.name || '').trim()
+        if (!name) throw new Error('客户名称必填')
+        const level = String(src.level || 'default')
+        if (!['A', 'B', 'C', 'default'].includes(level)) throw new Error('等级仅支持 A/B/C/default')
+        const settle = String(src.settlement_type || 'daily')
+        if (!['daily', 'monthly', 'cod'].includes(settle)) throw new Error('结算方式仅支持 daily/monthly/cod')
+        const payload = {
+          name, level, settlement_type: settle,
+          settlement_day: src.settlement_day ? Number(src.settlement_day) : null,
+          credit_limit: src.credit_limit != null && src.credit_limit !== '' ? Number(src.credit_limit) : null,
+          overdue_days: Number(src.overdue_days || 30),
+          visible_all: src.visible_all !== false,
+          status: String(src.status || 'active'),
+          remark: String(src.remark || '').trim() || null,
+        }
+        if (src.id) {
+          await svcPatch('customer', 'id=eq.' + Number(src.id), payload)
+          await mlog('update_customer', 'customer', Number(src.id), { name })
+          return { ok: true, id: Number(src.id), mode: 'updated' }
+        }
+        const rows = await svcInsert('customer', Object.assign({ tenant_id: tid }, payload))
+        const row = (Array.isArray(rows) ? rows[0] : rows) || {}
+        await mlog('create_customer', 'customer', row.id, { name })
+        return { ok: true, id: row.id, mode: 'created' }
+      }
+
+      if (sub === 'list_prices') {
+        const q = 'select=*&tenant_id=eq.' + tid + '&order=goods_id,scope,scope_value,valid_from'
+        const prices = await svcGet('price', q)
+        return { ok: true, prices }
+      }
+
+      if (sub === 'set_price') {
+        const goodsId = Number(src.goods_id)
+        const scope = String(src.scope || '')
+        const scopeValue = String(src.scope_value || '')
+        const price = Number(src.price)
+        if (!goodsId) throw new Error('缺少商品')
+        if (!['type', 'customer'].includes(scope)) throw new Error('scope 仅支持 type/customer')
+        if (scope === 'customer' && !/^\d+$/.test(scopeValue)) throw new Error('客户专属价必须选择客户')
+        if (!(price > 0)) throw new Error('价格必须大于 0')
+        const today = bjToday()
+        // 同日覆盖（与商家后台批量改价同口径）：先删今日同键行再插
+        await svcDelete('price', 'goods_id=eq.' + goodsId + '&scope=eq.' + scope + '&scope_value=eq.' + encodeURIComponent(scopeValue) + '&valid_from=eq.' + today)
+        const rows = await svcInsert('price', {
+          tenant_id: tid, goods_id: goodsId, scope, scope_value: scopeValue, price, valid_from: today,
+        })
+        const row = (Array.isArray(rows) ? rows[0] : rows) || {}
+        await mlog('set_price', 'price', row.id, { goods_id: goodsId, scope, scope_value: scopeValue, price })
+        return { ok: true, id: row.id, valid_from: today }
+      }
+
+      throw new Error('未知代维护操作：' + (sub || '(空)'))
     }
 
     throw new Error('未知操作：' + (action || '(空)'))
