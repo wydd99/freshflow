@@ -334,6 +334,11 @@
           <el-form-item label="可见全部商品">
             <el-switch v-model="cdlg.visible_all" active-text="开" inactive-text="关" />
           </el-form-item>
+          <el-form-item v-if="!cdlg.visible_all" label="可见分类">
+            <el-select v-model="cdlg.visible_category_names" multiple filterable style="width: 100%" placeholder="勾选该客户可购买的分类（可输入新分类名）">
+              <el-option v-for="c in mt.custCategories" :key="c.id" :label="c.name" :value="c.name" />
+            </el-select>
+          </el-form-item>
           <el-form-item label="备注">
             <el-input v-model="cdlg.remark" type="textarea" :rows="2" />
           </el-form-item>
@@ -433,9 +438,9 @@ async function toggle(row) {
   }
 }
 // ===== U6 代维护（替商家录商品/客户/价格，后端每笔留痕） =====
-const mt = reactive({ tenantId: null, subTab: 'goods', goodsKw: '', custKw: '', goods: [], categories: [], customers: [], prices: [], loadingGoods: false, loadingCustomers: false, loadingPrices: false, priceGoodsId: null })
+const mt = reactive({ tenantId: null, subTab: 'goods', goodsKw: '', custKw: '', goods: [], categories: [], customers: [], custCategories: [], prices: [], loadingGoods: false, loadingCustomers: false, loadingPrices: false, priceGoodsId: null })
 const gdlg = reactive({ visible: false, saving: false, id: null, code: '', name: '', category: '', unit: '斤', base_price: 0, alias: '', spec: '', description: '', allow_mall: true, status: 'active' })
-const cdlg = reactive({ visible: false, saving: false, id: null, name: '', level: 'default', settlement_type: 'daily', settlement_day: null, credit_limit: null, overdue_days: 30, visible_all: true, remark: '', status: 'active' })
+const cdlg = reactive({ visible: false, saving: false, id: null, name: '', level: 'default', settlement_type: 'daily', settlement_day: null, credit_limit: null, overdue_days: 30, visible_all: true, visible_category_names: [], remark: '', status: 'active' })
 const pf = reactive({ scope: 'type', levels: [], customerId: null, price: null, saving: false })
 const batch = reactive({ visible: false, text: '', running: false })
 
@@ -503,6 +508,7 @@ async function loadMtCustomers() {
     const res = await call('maintain', { sub: 'list_customers', tenant_id: mt.tenantId })
     if (!res.ok) throw new Error(res.error || '加载失败')
     mt.customers = res.customers || []
+    if (res.categories) mt.custCategories = res.categories
   } catch (e) {
     ElMessage.error(String(e?.message || e))
   } finally { mt.loadingCustomers = false }
@@ -614,6 +620,7 @@ function openCustomerDialog(row) {
     settlement_day: row?.settlement_day ?? null, credit_limit: row?.credit_limit ?? null,
     overdue_days: row?.overdue_days ?? 30,
     visible_all: row ? row.visible_all !== false : true,
+    visible_category_names: row ? [...(row.visible_category_names || [])] : [],
     remark: row?.remark || '', status: row?.status || 'active',
   })
 }
@@ -627,6 +634,7 @@ async function saveCustomer() {
       settlement_day: cdlg.settlement_type === 'monthly' ? cdlg.settlement_day : undefined,
       credit_limit: cdlg.credit_limit, overdue_days: cdlg.overdue_days,
       visible_all: cdlg.visible_all, remark: cdlg.remark, status: cdlg.status || undefined,
+      visible_category_names: cdlg.visible_all ? [] : cdlg.visible_category_names.slice(),
     })
     if (!res.ok) throw new Error(res.error || '保存失败')
     ElMessage.success(res.mode === 'created' ? '已创建' : '已更新')

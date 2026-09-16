@@ -282,6 +282,15 @@ exports.main = async (event) => {
         const created = await svcInsert('goods_category', { tenant_id: tid, name, sort: 99 })
         return ((Array.isArray(created) ? created[0] : created) || {}).id || null
       }
+      // 客户可见分类重写（visible_all=false 时生效；传数组=全量重写，未传=不动）
+      const applyVisibleCats = async (customerId, names) => {
+        if (!Array.isArray(names)) return
+        await svcDelete('customer_visible_category', 'customer_id=eq.' + customerId)
+        for (const nm of names) {
+          const cid = await resolveCategory(String(nm).trim())
+          if (cid) await svcInsert('customer_visible_category', { tenant_id: tid, customer_id: customerId, category_id: cid })
+        }
+      }
 
       if (sub === 'list_goods') {
         const [goods, cats] = await Promise.all([
@@ -320,8 +329,23 @@ exports.main = async (event) => {
       }
 
       if (sub === 'list_customers') {
-        const customers = await svcGet('customer', 'select=*&tenant_id=eq.' + tid + '&order=id')
-        return { ok: true, customers }
+        const [customers, mappings, cats] = await Promise.all([
+          svcGet('customer', 'select=*&tenant_id=eq.' + tid + '&order=id'),
+          svcGet('customer_visible_category', 'select=customer_id,category_id&tenant_id=eq.' + tid),
+          svcGet('goods_category', 'select=id,name&tenant_id=eq.' + tid + '&order=sort'),
+        ])
+        const catName = new Map(cats.map((c) => [c.id, c.name]))
+        const visByCustomer = new Map()
+        for (const m of (Array.isArray(mappings) ? mappings : [])) {
+          if (!visByCustomer.has(m.customer_id)) visByCustomer.set(m.customer_id, [])
+          const nm = catName.get(m.category_id)
+          if (nm) visByCustomer.get(m.customer_id).push(nm)
+        }
+        const customersOut = customers.map((c) => ({
+          ...c,
+          visible_category_names: visByCustomer.get(c.id) || [],
+        }))
+        return { ok: true, customers: customersOut, categories: cats }
       }
 
       if (sub === 'save_customer') {
@@ -342,11 +366,13 @@ exports.main = async (event) => {
         }
         if (src.id) {
           await svcPatch('customer', 'id=eq.' + Number(src.id), payload)
+          await applyVisibleCats(Number(src.id), src.visible_category_names)
           await mlog('update_customer', 'customer', Number(src.id), { name })
           return { ok: true, id: Number(src.id), mode: 'updated' }
         }
         const rows = await svcInsert('customer', Object.assign({ tenant_id: tid }, payload))
         const row = (Array.isArray(rows) ? rows[0] : rows) || {}
+        await applyVisibleCats(row.id, src.visible_category_names)
         await mlog('create_customer', 'customer', row.id, { name })
         return { ok: true, id: row.id, mode: 'created' }
       }
