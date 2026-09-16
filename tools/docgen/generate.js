@@ -274,12 +274,12 @@ function figure(file, caption) {
   return [
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 160, after: 60 },
+      spacing: { before: 160, after: 60, line: 312 },
       children: [new ImageRun({ data: buf, transformation: { width: W, height: H }, type: "png" })],
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
+      spacing: { after: 200, line: 312 },
       children: [new TextRun({ text: `图 ${figNo}  ${caption}`, size: 18, color: P.secondary })],
     }),
   ];
