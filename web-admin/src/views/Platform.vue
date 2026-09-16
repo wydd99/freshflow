@@ -151,9 +151,10 @@
                 <el-table-column label="超期天数" width="90" align="center">
                   <template #default="{ row }">{{ row.overdue_days }} 天</template>
                 </el-table-column>
-                <el-table-column label="可见全部商品" width="110" align="center">
+                <el-table-column label="可见范围" min-width="130">
                   <template #default="{ row }">
-                    <el-tag size="small" :type="row.visible_all ? 'success' : 'info'">{{ row.visible_all ? '是' : '否' }}</el-tag>
+                    <el-tag v-if="row.visible_all" size="small" type="success">全部商品</el-tag>
+                    <span v-else>{{ (row.visible_category_names && row.visible_category_names.length) ? row.visible_category_names.join('；') : '未设置' }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="状态" width="80" align="center">
