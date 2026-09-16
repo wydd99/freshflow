@@ -40,7 +40,11 @@ const rows = ref([])
 const loading = ref(false)
 const actionFilter = ref('')
 
-const filtered = computed(() => (actionFilter.value ? rows.value.filter((r) => r.action === actionFilter.value) : rows.value))
+// 平台代维护（maintain_*）只在平台侧留痕，不进商家视图（商家侧少看原则）
+const filtered = computed(() => {
+  const list = rows.value.filter((r) => !String(r.action || '').startsWith('maintain_'))
+  return actionFilter.value ? list.filter((r) => r.action === actionFilter.value) : list
+})
 
 function fmt(t) {
   if (!t) return ''
