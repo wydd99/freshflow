@@ -12,7 +12,7 @@
         <el-button type="primary" size="large" style="width: 100%" :loading="loading" @click="submit">
           登 录
         </el-button>
-        <div class="tip">真实登录（CloudBase Auth）；本地 localhost 预览如遇域名限制，请用已发布的正式站点</div>
+        <div class="tip">如无法登录，请联系管理员</div>
       </el-form>
     </el-card>
   </div>

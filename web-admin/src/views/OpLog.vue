@@ -7,10 +7,11 @@
           <el-option label="草单整合" value="merge_draft" />
           <el-option label="强制赊账放行" value="credit_force_pass" />
           <el-option label="设备踢除" value="kick_device" />
+          <el-option label="登记收款" value="payment_received" />
         </el-select>
         <el-button @click="load">刷新</el-button>
         <el-button @click="doExport">导出 CSV</el-button>
-        <span class="hint">记录系统里的关键操作（谁、何时、对什么做的），最近 200 条</span>
+        <span class="hint">记录系统里的关键操作，最近 200 条</span>
       </div>
       <el-table :data="filtered" v-loading="loading" border stripe size="small">
         <el-table-column label="时间" width="160">
@@ -51,13 +52,24 @@ function fmt(t) {
   return String(t).replace('T', ' ').slice(0, 19)
 }
 function nameOf(a) {
-  return { merge_draft: '草单整合', credit_force_pass: '强制赊账放行', kick_device: '设备踢除' }[a] || a
+  return { merge_draft: '草单整合', credit_force_pass: '强制赊账放行', kick_device: '设备踢除', payment_received: '登记收款' }[a] || '其他操作'
 }
 function tagOf(a) {
-  return { merge_draft: 'info', credit_force_pass: 'warning', kick_device: 'danger' }[a] || ''
+  return { merge_draft: 'info', credit_force_pass: 'warning', kick_device: 'danger', payment_received: 'success' }[a] || 'info'
 }
+// 脱敏展示：只给商家看结果摘要，不输出内部原始字段结构
 function detailOf(row) {
-  try { return JSON.stringify(row.detail || {}) } catch (e) { return '' }
+  const d = row.detail || {}
+  try {
+    if (row.action === 'merge_draft') {
+      const merged = Array.isArray(d.merged) ? d.merged.join('、') : (d.merged || '')
+      return merged ? `并入主单 ${d.main || ''}（${merged}）` : `并入主单 ${d.main || ''}`
+    }
+    if (row.action === 'credit_force_pass') return `订单 ${d.order_no || ''} 已强制放行`
+    if (row.action === 'payment_received') return `登记收款 ¥${Number(d.amount || 0).toFixed(2)}${d.note ? '，备注：' + d.note : ''}`
+    if (row.action === 'kick_device') return d.username ? `踢除账号 ${d.username} 的登录设备` : '踢除登录设备'
+    return ''
+  } catch (e) { return '' }
 }
 
 async function load() {
