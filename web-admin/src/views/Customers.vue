@@ -263,7 +263,7 @@ async function fetchList() {
     list.value = await customerApi.list({ ...query })
     // 附带子账号概览（customer_user 全量在租户内可见，RLS 保证）
     const { db } = await import('@/lib/cloudbase')
-    const res = await db.from('customer_user').select('id,username,display_name,status,customer_id,phone')
+    const res = await db.from('customer_user').select('id,username,display_name,status,customer_id,phone,uid')
     const rows = res?.data ?? res
     if (Array.isArray(rows)) {
       const byCustomer = new Map()
