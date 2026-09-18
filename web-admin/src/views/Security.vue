@@ -61,8 +61,9 @@
             </template>
           </el-table-column>
           <el-table-column label="最近 IP" width="140" prop="last_ip" />
-          <el-table-column label="操作" width="90" align="center">
+          <el-table-column label="操作" width="130" align="center">
             <template #default="{ row }">
+              <el-button v-if="!row.verified" link type="success" size="small" @click="trust(row)">放行</el-button>
               <el-button link type="danger" size="small" @click="kick(row)">踢除</el-button>
             </template>
           </el-table-column>
@@ -155,6 +156,26 @@ async function kick(row) {
     const j = await r.json()
     if (!j.ok) throw new Error(j.error || '操作失败')
     ElMessage.success('已踢除')
+    loadDevices()
+  } catch (e) {
+    ElMessage.error(String(e?.message || e))
+  }
+}
+
+async function trust(row) {
+  await ElMessageBox.confirm(`确认放行「${row.username}」的这台设备？放行后顾客刷新页面即可直接进入。`, '放行设备', { type: 'success' })
+  try {
+    const { data } = await auth.getSession()
+    const tk = data?.session?.access_token
+    if (!tk) throw new Error('会话失效，请重新登录')
+    const r = await fetch(GATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'trust_device', access_token: tk, device_id: localStorage.getItem('ff_admin_device') || 'web-admin', id: row.id }),
+    })
+    const j = await r.json()
+    if (!j.ok) throw new Error(j.error || '操作失败')
+    ElMessage.success('已放行——通知顾客刷新页面即可进入')
     loadDevices()
   } catch (e) {
     ElMessage.error(String(e?.message || e))

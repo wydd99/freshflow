@@ -230,6 +230,23 @@ async function doKick(actor, deviceRowId) {
   return { ok: true }
 }
 
+// 商家确认放行：把本租户某台未验证设备直接标记为已验证
+// （顾客打电话来说"是我本人"时，商家在安全页点一下放行，顾客刷新即进，无需等短信）
+async function doTrust(actor, deviceRowId, ip) {
+  if (actor.kind !== 'admin') throw new Error('仅管理员可操作')
+  const id = Number(deviceRowId)
+  if (!id) throw new Error('缺少设备记录 id')
+  const rows = await svcGet('login_device', 'select=id,tenant_id,username,device_id&id=eq.' + id)
+  const row = rows[0]
+  if (!row || String(row.tenant_id) !== String(actor.tenant_id)) throw new Error('该设备不属于本租户')
+  if (row.verified) return { ok: true, id, already: true }
+  await svcPatch('login_device', 'id=eq.' + id, {
+    verified: true, verified_at: nowIso(), pending_vid: null, pending_fail: 0, last_ip: ip,
+  })
+  await audit(actor, row.device_id, null, 'trust_device', { username: row.username })
+  return { ok: true }
+}
+
 // ---------- 主入口 ----------
 exports.main = async (event) => {
   let src = event
@@ -250,6 +267,7 @@ exports.main = async (event) => {
       case 'send_code': return await doSendCode(actor, deviceId, ip)
       case 'verify': return await doVerify(actor, deviceId, String((src && src.code) || ''), ip)
       case 'kick_device': return await doKick(actor, src.id)
+      case 'trust_device': return await doTrust(actor, src.id, ip)
       default: throw new Error('未知操作：' + (action || '(空)'))
     }
   } catch (e) {
