@@ -387,7 +387,7 @@ function switchView(v) {
   document.getElementById('view-orders').classList.toggle('hide', v !== 'orders')
   document.getElementById('nav-goods').style.fontWeight = v === 'goods' ? '700' : '400'
   document.getElementById('nav-orders').style.fontWeight = v === 'orders' ? '700' : '400'
-  if (v === 'orders') loadOrders('all', document.querySelector('.obar button'))
+  if (v === 'orders') { if (!gatePassed) return; loadOrders('all', document.querySelector('.obar button')) }
 }
 
 async function enterMain() {
@@ -404,6 +404,10 @@ async function enterMain() {
   ctEl.textContent = ci.tip
   ctEl.classList.add('on')
   ctEl.classList.toggle('past', ci.past)
+  const gateOk = await gateCheck() // 先验证后进：未通过则不加载任何数据
+  if (!gateOk) return
+  await loadMainData()
+  async function loadMainData() {
   const cu = (await rest('customer_user', `select=customer_id&uid=eq.${sub()}`)) || []
   const cRows = (await rest('customer', `select=*&id=eq.${(cu[0] || {}).customer_id}`)) || []
   customer = cRows[0] || {}
@@ -439,7 +443,8 @@ async function enterMain() {
   saveCart()
   renderCats(); renderGoods()
   if (droppedCart) ElMessageTransient(droppedCart + ' 个已下架商品已从购物车移除')
-  gateCheck() // 登录安全门禁：新设备验证（记录模式下云端不拦截）
+  gatePassed = true
+  }
   // 品牌化（T3.4）：页头/标题读租户品牌
   try {
     const tRows = (await rest('tenant', 'select=brand&limit=1')) || []
@@ -561,13 +566,15 @@ async function authgateCall(action, extra) {
   })
   return r.json()
 }
+var gatePassed = false
 async function gateCheck() {
   try {
     const res = await authgateCall('check')
-    if (!res || res.ok === false) return
-    if (res.trusted) return
+    if (!res || res.ok === false) return true
+    if (res.trusted) return true
     openGate(res)
-  } catch (e) { /* 网络异常不拦截 */ }
+    return false
+  } catch (e) { return true }
 }
 function openGate(res) {
   const msg = document.getElementById('gate-msg')
@@ -611,7 +618,9 @@ async function gateVerify() {
     const res = await authgateCall('verify', { code })
     if (res.ok && res.trusted) {
       document.getElementById('gatemask').classList.add('hide')
+      gatePassed = true
       ElMessageTransient('验证通过，本设备后续登录免验证')
+      await loadMainData()
     } else { alert(res.error || '验证失败') }
   } catch (e) { alert('网络异常，请重试') } finally { btn.disabled = false }
 }
