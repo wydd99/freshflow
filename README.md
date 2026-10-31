@@ -18,6 +18,22 @@
 
 </div>
 
+**English** | [中文](#-它解决什么问题)
+
+## English Overview
+
+**FreshFlow** is a multi-tenant B2B SaaS for fresh-produce wholesale delivery. Restaurant customers order through a WeChat Mini Program or H5 mall (typed / pasted / **photo-of-handwritten-order AI recognition** / **voice ordering**), while the wholesaler runs pricing, sorting, delivery, reconciliation and printing from a single admin dashboard.
+
+- 📸 **AI order entry** — handwritten order photo → GLM-4.5V structured extraction → low-confidence lines flagged for human review (A/B-tested against DeepSeek, 4/4 on cursive digits)
+- 🎤 **Voice ordering** — "two jin of cilantro, five jin of potato" → Tencent Cloud ASR (hand-rolled TC3 signature, zero SDK) → LLM structuring → confirm to order
+- 🏪 **Hard multi-tenancy** — PostgreSQL Row-Level Security, 26+2 policies, adversarially tested across merchant / customer / platform roles
+- 📦 **Full order state machine** — draft → confirmed → sorting → ready → shipped → done, with actual-quantity repricing
+- 🔐 **Security by default** — new-device SMS verification, 90-min session keep-alive, zero-silent-failure writes (read-back guards + global rejection net)
+
+**Stack**: Vue3 + Element Plus (admin, 14 pages) · WeChat Mini Program · single-file H5 mall · Python cloud functions · PostgreSQL 17 (RLS) · Tencent CloudBase
+
+> Full documentation (Chinese): architecture, dev log with 15 post-mortems, ops manual, and the AI recognition A/B report — see `docs/`.
+
 ## 🎯 它解决什么问题
 
 传统蔬菜批发的日常：店家在微信群里喊单、老板手抄订单、月底翻聊天记录对账——错单、漏单、赖账全靠人情兜底。FreshFlow 把整条链路搬上线：
