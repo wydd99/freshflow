@@ -1,6 +1,6 @@
 @echo off
 title FreshFlow Admin Preview
-cd /d D:\FreshFlow\web-admin
+cd /d "%~dp0web-admin"
 
 REM If port 5273 is already serving, just open the browser (no duplicate process)
 powershell -NoProfile -Command "$c=New-Object Net.Sockets.TcpClient; try{$c.Connect('127.0.0.1',5273); $c.Close(); exit 0}catch{exit 1}"
